@@ -3,6 +3,11 @@ using BeerOverflowWindowsApp.DataModels;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Net;
+using System;
+using System.Net.Http.Headers;
+using System.Net.Http;
+using System.Text;
 
 namespace BeerOverflowWindowsApp
 {
@@ -10,7 +15,7 @@ namespace BeerOverflowWindowsApp
     {
         private static string _filePath = ConfigurationManager.AppSettings["filePath"];
 
-        public static void SaveData(BarDataModel barData)
+        public static async void SaveData(BarDataModel barData)
         {
             var barsInFile = BarFileReader.GetAllBarData();
             foreach (var bar in barData)
@@ -31,7 +36,16 @@ namespace BeerOverflowWindowsApp
                 }
             }
             var barsDataJson = JsonConvert.SerializeObject(barData);
-            File.WriteAllText(_filePath, barsDataJson);
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:13623/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var json = JsonConvert.SerializeObject(barData);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("Api/BarData/SaveBars", content);
+            }
+            //File.WriteAllText(_filePath, barsDataJson);
         }
     }
 }

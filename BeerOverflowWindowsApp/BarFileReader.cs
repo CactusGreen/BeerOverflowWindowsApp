@@ -3,21 +3,19 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Net;
 
 namespace BeerOverflowWindowsApp
 {
     static class BarFileReader
     {
-        private static readonly string _filePath = ConfigurationManager.AppSettings["filePath"];
-
         public static BarDataModel GetAllBarData()
         {
-            BarDataModel result = null;
-            if (File.Exists(_filePath))
-            {
-                var barsData = File.ReadAllText(_filePath);
-                result = JsonConvert.DeserializeObject<BarDataModel>(barsData);
-            }
+            var webClient = new WebClient();
+            var response = webClient.DownloadString("http://localhost:13623/Api/BarData/GetAllBars");
+
+            var result = JsonConvert.DeserializeObject<BarDataModel>(response);
+
             if (result == null) { result = new BarDataModel(); }
             return result;
         }

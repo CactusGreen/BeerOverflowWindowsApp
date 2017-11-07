@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.15
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeerOverflowWindowsApp", "BeerOverflowWindowsApp\BeerOverflowWindowsApp.csproj", "{8219DCAD-DDC8-42A7-A3BC-D1BD081BB2F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeerOverflowWindowsApp.UnitTests", "BeerOverflowWindowsApp.UnitTests\BeerOverflowWindowsApp.UnitTests.csproj", "{A2CDA18F-CEC2-4F6B-B02C-0A55A0B38A3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarDataWebApi", "BarDataWebApi\BarDataWebApi.csproj", "{70D440C0-2F24-44EA-80CE-5525C9405E2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebInterface", "WebInterface\WebInterface.csproj", "{82033FBC-208D-4E3A-B87B-5CE9354C21DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{A2CDA18F-CEC2-4F6B-B02C-0A55A0B38A3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2CDA18F-CEC2-4F6B-B02C-0A55A0B38A3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2CDA18F-CEC2-4F6B-B02C-0A55A0B38A3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70D440C0-2F24-44EA-80CE-5525C9405E2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70D440C0-2F24-44EA-80CE-5525C9405E2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70D440C0-2F24-44EA-80CE-5525C9405E2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70D440C0-2F24-44EA-80CE-5525C9405E2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82033FBC-208D-4E3A-B87B-5CE9354C21DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82033FBC-208D-4E3A-B87B-5CE9354C21DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82033FBC-208D-4E3A-B87B-5CE9354C21DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82033FBC-208D-4E3A-B87B-5CE9354C21DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

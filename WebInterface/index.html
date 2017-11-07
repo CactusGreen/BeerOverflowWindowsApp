@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+</head>
+<body>
+    <div>
+        <h2>All Bars</h2>
+    </div>
+    <div id="bars">
+
+    </div>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+        var uri = 'http://localhost:13623/API/BarData/GetAllBars';
+
+    $(document).ready(function () {
+
+      $.getJSON(uri)
+          .done(function (data) {
+              for (var i = 0 ; i < data.length; i++) {
+                  $('#bars').append(data[i].Title + '<br>');
+              }
+              
+            
+          });
+    });
+
+
+    </script>
+</body>
+</html>
