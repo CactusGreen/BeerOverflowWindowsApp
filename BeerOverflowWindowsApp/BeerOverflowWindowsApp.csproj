@@ -81,7 +81,8 @@
     <Compile Include="BarComparers\ComparerByTitle.cs" />
     <Compile Include="BarComparers\ComparerType.cs" />
     <Compile Include="BarRating.cs" />
-    <Compile Include="RegexTools.cs" />
+    <Compile Include="Utilities\JsonFetcher.cs" />
+    <Compile Include="Utilities\RegexTools.cs" />
     <Compile Include="DataModels\BarData.cs" />
     <Compile Include="DataModels\BarDataModel.cs" />
     <Compile Include="BarFileReader.cs" />

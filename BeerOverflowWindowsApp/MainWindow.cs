@@ -8,7 +8,9 @@ using BeerOverflowWindowsApp.BarComparers;
 using BeerOverflowWindowsApp.DataModels;
 using System.Device.Location;
 using System.Configuration;
+using System.Threading.Tasks;
 using BeerOverflowWindowsApp.BarProviders;
+using BeerOverflowWindowsApp.Utilities;
 using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace BeerOverflowWindowsApp
@@ -30,7 +32,7 @@ namespace BeerOverflowWindowsApp
             RadiusTextBox.Text = _defaultRadius;
         }
 
-        public void ReLoadDataGrid(bool completely = false)
+        public void ReloadDataGrid(bool completely = false)
         {
             if (completely)
             {
@@ -59,7 +61,7 @@ namespace BeerOverflowWindowsApp
             _selectedBar = null;
         }
 
-        private void GoButton_Click(object sender, EventArgs e)
+        private async void GoButton_Click(object sender, EventArgs e)
         {
             var latitude = GetLatitude();
             var longitude = GetLongitude();
@@ -90,11 +92,12 @@ namespace BeerOverflowWindowsApp
 
                 foreach (IBeerable provider in providerList)
                 {
-                    CollectBarsFromProvider(provider, result, latitude, longitude, radius);
+                    result.AddRange(await CollectBarsFromProvider(provider, latitude, longitude, radius));
                     currentProgressValue += progressStep;
                     UpdateProgressBars(currentProgressValue);
                 }
 
+                result.CleanUpList(latitude, longitude, radius);
                 HideProgressBars();
                 
                 // Display
@@ -107,7 +110,6 @@ namespace BeerOverflowWindowsApp
                     bar.DistanceToCurrentLocation = currentLocation.GetDistanceTo(new GeoCoordinate(bar.Latitude, bar.Longitude));
                 }
                 SortList(CompareType.Distance, SortOrder.Ascending);
-                Application.DoEvents();        // no idea what this does. Some threading stuff, but makes button disabling work
                 GoButton.Enabled = true;
             }
         }
@@ -135,18 +137,26 @@ namespace BeerOverflowWindowsApp
             progressBar.Maximum = 100;
         }
 
-        private void CollectBarsFromProvider(IBeerable provider, BarDataModel barList,
+        private async Task<List<BarData>> CollectBarsFromProvider(IBeerable provider,
             string latitude, string longitude, string radius)
         {
+            var response = new List<BarData>();
             try
             {
-                barList.AddRange(provider.GetBarsAround(latitude, longitude, radius));
-                barList.CleanUpList(latitude, longitude, radius);
+                try
+                {
+                    response = await provider.GetBarsAroundAsync(latitude, longitude, radius);
+                }
+                catch (NotImplementedException)
+                {
+                    response = provider.GetBarsAround(latitude, longitude, radius);
+                }
             }
             catch (Exception exception)
             {
                 MessageBox.Show("Something went wrong with the message: " + exception.Message);
             }
+            return response;
         }
 
         private string GetLatitude()
@@ -233,7 +243,7 @@ namespace BeerOverflowWindowsApp
                 _barRating.Sort(compareType, isAscending);
                 BarDataGridView_ClearHeaderSortGlyphs();
                 BarDataGridView.Columns[columnIndex].HeaderCell.SortGlyphDirection = sortOrder;
-                ReLoadDataGrid();
+                ReloadDataGrid();
             }
         }
 

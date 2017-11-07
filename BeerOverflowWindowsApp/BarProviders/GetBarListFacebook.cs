@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
+using System.Threading.Tasks;
 using BeerOverflowWindowsApp.DataModels;
+using BeerOverflowWindowsApp.Utilities;
 using Newtonsoft.Json;
 using static BeerOverflowWindowsApp.DataModels.FacebookDataModel;
 
 namespace BeerOverflowWindowsApp.BarProviders
 {
-    class GetBarListFacebook : IBeerable
+    class GetBarListFacebook : JsonFetcher, IBeerable
     {
         private readonly string _apiLink = ConfigurationManager.AppSettings["FacebookAPILink"];
         private readonly string _accessToken = ConfigurationManager.AppSettings["FacebookAccessToken"];
@@ -28,19 +27,25 @@ namespace BeerOverflowWindowsApp.BarProviders
 
         private PlacesResponse GetBarData(string latitude, string longitude, string radius)
         {
-            PlacesResponse result;
-            try
-            {
-                var webClient = new WebClient();
-                var response = webClient.DownloadString(
-                    string.Format(_apiLink, _accessToken, latitude+","+longitude, radius, _requestedFields, _category));
-                result = JsonConvert.DeserializeObject<PlacesResponse>(response);
-            }
-            catch (Exception exception)
-            {
-                throw exception;
-            }
+            var link = string.Format(_apiLink, _accessToken, latitude + "," + longitude, radius, _requestedFields, _category);
+            var response = GetJsonStream(link);
+            var result = JsonConvert.DeserializeObject<PlacesResponse>(response);
             return result;
+        }
+
+        public async Task<List<BarData>> GetBarsAroundAsync(string latitude, string longitude, string radius)
+        {
+            var result = await GetBarDataAsync(latitude, longitude, radius);
+            var barList = FacebookDataToBars(result);
+            return barList;
+        }
+
+        private async Task<PlacesResponse> GetBarDataAsync(string latitude, string longitude, string radius)
+        {
+            var link = string.Format(_apiLink, _accessToken, latitude + "," + longitude, radius, _requestedFields, _category);
+            var jsonStream = await GetJsonStreamAsync(link);
+            var deserialized = JsonConvert.DeserializeObject<PlacesResponse>(jsonStream);
+            return deserialized;
         }
 
         private List<BarData> FacebookDataToBars(PlacesResponse resultData)

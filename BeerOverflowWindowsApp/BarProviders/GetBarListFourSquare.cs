@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Threading.Tasks;
 using FourSquare.SharpSquare.Core;
 using FourSquare.SharpSquare.Entities;
 using BeerOverflowWindowsApp.DataModels;
@@ -18,6 +20,11 @@ namespace BeerOverflowWindowsApp.BarProviders
             var result = GetBarData(latitude, longitude, radius);
             barList = VenueListToBars(result);
             return barList;
+        }
+
+        public Task<List<BarData>> GetBarsAroundAsync(string latitude, string longitude, string radius)
+        {
+            throw new NotImplementedException();
         }
 
         private IEnumerable<Venue> GetBarData (string latitude, string longitude, string radius)
