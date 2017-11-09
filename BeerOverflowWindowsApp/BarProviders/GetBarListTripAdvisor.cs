@@ -111,7 +111,7 @@ namespace BeerOverflowWindowsApp.BarProviders
             foreach (var result in resultData.data)
             {
                 var distanceMeters = ConvertMilesToMeters(double.Parse(result.distance, CultureInfo.InvariantCulture));
-                if ((int) distanceMeters > int.Parse(radius)) continue;
+                if ((int) distanceMeters > int.Parse(radius, CultureInfo.InvariantCulture)) continue;
                 if (result.locationResponse.groups != null)
                 {
                     if (result.locationResponse.groups.Exists(x => groupList.Contains(x.name)) &&
