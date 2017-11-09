@@ -29,7 +29,7 @@ namespace BeerOverflowWindowsApp.DataModels
             public int Width { get; set; }
         }
 
-        public class Result
+        public class Place
         {
             public Geometry Geometry { get; set; }
             public string Icon { get; set; }
@@ -48,7 +48,7 @@ namespace BeerOverflowWindowsApp.DataModels
         public class PlacesApiQueryResponse
         {
             public List<object> Html_attributions { get; set; }
-            public List<Result> Results { get; set; }
+            public List<Place> Results { get; set; }
             public string Status { get; set; }
             public string next_page_token { get; set; }
         }

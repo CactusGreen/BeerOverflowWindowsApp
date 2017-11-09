@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using BeerOverflowWindowsApp.DataModels;
 using BeerOverflowWindowsApp.Utilities;
@@ -18,8 +19,8 @@ namespace BeerOverflowWindowsApp.BarProviders
 
         public List<BarData> GetBarsAround(string latitude, string longitude, string radius)
         {
-            var result = GetBarData(latitude, longitude, radius);
-            var barList = VenueListToBars(result, radius);
+            var venueList = GetBarData(latitude, longitude, radius);
+            var barList = VenueListToBarList(venueList, radius);
             return barList;
         }
 
@@ -31,16 +32,16 @@ namespace BeerOverflowWindowsApp.BarProviders
             foreach (var category in categoryIDs)
             {
                 var link = string.Format(_apiLink, _clientId, _clientSecret, latitude, longitude, category, radius);
-                var response = GetJsonStream(link);
-                venueList.AddRange(JsonConvert.DeserializeObject<SearchResponse>(response).response.venues);
+                var jsonStream = GetJsonStream(link);
+                venueList.AddRange(JsonConvert.DeserializeObject<SearchResponse>(jsonStream).response.venues);
             }
             return venueList;
         }
 
         public async Task<List<BarData>> GetBarsAroundAsync(string latitude, string longitude, string radius)
         {
-            var result = await GetBarDataAsync(latitude, longitude, radius);
-            var barList = VenueListToBars(result, radius);
+            var venueList = await GetBarDataAsync(latitude, longitude, radius);
+            var barList = VenueListToBarList(venueList, radius);
             return barList;
         }
 
@@ -52,28 +53,27 @@ namespace BeerOverflowWindowsApp.BarProviders
             foreach (var category in categoryIDs)
             {
                 var link = string.Format(_apiLink, _clientId, _clientSecret, latitude, longitude, category, radius);
-                var response = await GetJsonStreamAsync(link);
-                venueList.AddRange(JsonConvert.DeserializeObject<SearchResponse>(response).response.venues);
+                var jsonStream = await GetJsonStreamAsync(link);
+                venueList.AddRange(JsonConvert.DeserializeObject<SearchResponse>(jsonStream).response.venues);
             }
             return venueList;
         }
 
-        private List<BarData> VenueListToBars (IEnumerable<Venue> resultData, string radius)
+        private static List<BarData> VenueListToBarList(IEnumerable<Venue> venueList, string radius)
         {
-            var barList = new List<BarData>();
             var radiusNum = int.Parse(radius, CultureInfo.InvariantCulture);
-            foreach (var result in resultData)
+            return (from venue in venueList where (venue.location.distance <= radiusNum) select VenueToBar(venue)).ToList();
+        }
+
+        private static BarData VenueToBar(Venue venue)
+        {
+            var newBar = new BarData
             {
-                if (result.location.distance > radiusNum) continue;
-                var newBar = new BarData
-                {
-                    Title = result.name,
-                    Latitude = result.location.lat,
-                    Longitude = result.location.lng
-                };
-                barList.Add(newBar);
-            }
-            return barList;
+                Title = venue.name,
+                Latitude = venue.location.lat,
+                Longitude = venue.location.lng
+            };
+            return newBar;
         }
     }
 }

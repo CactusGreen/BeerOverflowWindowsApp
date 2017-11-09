@@ -21,115 +21,109 @@ namespace BeerOverflowWindowsApp.BarProviders
 
         public List<BarData> GetBarsAround(string latitude, string longitude, string radius)
         {
-            List<BarData> barList = null;
-            var result = GetBarData(latitude, longitude);
-            barList = ApiQueryResponseToBars(result, radius);
+            var placeList = GetBarData(latitude, longitude);
+            var barList = PlaceListToBarList(placeList, radius);
             return barList;
         }
 
-        private PlacesResponse GetBarData(string latitude, string longitude)
+        private IEnumerable<PlaceInfo> GetBarData(string latitude, string longitude)
         {
-            PlacesResponse result = null;
-
             var categories = _categoryListString.Split(',');
-            result = new PlacesResponse() { data = new List<PlaceInfo>() };
+            var placeList =  new List<PlaceInfo>();
 
             foreach (var category in categories)
             {
                 var link = string.Format(_mapperLink, latitude, longitude, _accessKey, category);
-                var response = GetJsonStream(link);
-                result.data.AddRange(JsonConvert.DeserializeObject<PlacesResponse>(response).data);
+                var jsonStream = GetJsonStream(link);
+                placeList.AddRange(JsonConvert.DeserializeObject<PlacesResponse>(jsonStream).data);
             }
-            FetchLocations(result);
+            FetchLocations(placeList);
 
-            return result;
+            return placeList;
         }
 
-        private void FetchLocations(PlacesResponse result)
+        private void FetchLocations(IEnumerable<PlaceInfo> placeList)
         {
-            foreach (var place in result.data)
+            foreach (var place in placeList)
             {
-                GetLocationForPlace(place);
+                place.locationResponse = GetLocationForPlace(place);
             }
         }
 
-        private void GetLocationForPlace(PlaceInfo place)
+        private LocationResponse GetLocationForPlace(PlaceInfo place)
         {
             var link = string.Format(_locationApiLink, place.location_id, _accessKey);
-            var response = GetJsonStream(link);
-            var result = JsonConvert.DeserializeObject<LocationResponse>(response);
-            place.locationResponse = result;
+            var jsonStream = GetJsonStream(link);
+            var placeLocation = JsonConvert.DeserializeObject<LocationResponse>(jsonStream);
+            return placeLocation;
         }
 
         public async Task<List<BarData>> GetBarsAroundAsync(string latitude, string longitude, string radius)
         {
-            List<BarData> barList = null;
-            var result = await GetBarDataAsync(latitude, longitude);
-            barList = ApiQueryResponseToBars(result, radius);
+            var jsonStream = await GetBarDataAsync(latitude, longitude);
+            var barList = PlaceListToBarList(jsonStream, radius);
             return barList;
         }
 
-        private async Task<PlacesResponse> GetBarDataAsync(string latitude, string longitude)
+        private async Task<List<PlaceInfo>> GetBarDataAsync(string latitude, string longitude)
         {
-            PlacesResponse result = null;
-
             var categories = _categoryListString.Split(',');
-            result = new PlacesResponse() { data = new List<PlaceInfo>() };
+            var placeList = new List<PlaceInfo>();
 
             foreach (var category in categories)
             {
-                var response = await GetJsonStreamAsync(string.Format(_mapperLink, latitude, longitude, _accessKey, category));
-                result.data.AddRange(JsonConvert.DeserializeObject<PlacesResponse>(response).data);
+                var jsonStream = await GetJsonStreamAsync(string.Format(_mapperLink, latitude, longitude, _accessKey, category));
+                placeList.AddRange(JsonConvert.DeserializeObject<PlacesResponse>(jsonStream).data);
             }
-            await FetchLocationsAsync(result);
+            await FetchLocationsAsync(placeList);
 
-            return result;
+            return placeList;
         }
 
-        private async Task FetchLocationsAsync(PlacesResponse result)
+        private async Task FetchLocationsAsync(IEnumerable<PlaceInfo> placeList)
         {
-            foreach (var place in result.data)
+            foreach (var place in placeList)
             {
-                await GetLocationForPlaceAsync(place);
+                place.locationResponse = await GetLocationForPlaceAsync(place);
             }
         }
 
-        private async Task GetLocationForPlaceAsync(PlaceInfo place)
+        private async Task<LocationResponse> GetLocationForPlaceAsync(PlaceInfo place)
         {
             var link = string.Format(_locationApiLink, place.location_id, _accessKey);
-            var response = await GetJsonStreamAsync(link);
-            var result = JsonConvert.DeserializeObject<LocationResponse>(response);
-            place.locationResponse = result;
+            var jsonStream = await GetJsonStreamAsync(link);
+            var placeLocation = JsonConvert.DeserializeObject<LocationResponse>(jsonStream);
+            return placeLocation;
         }
 
-        private List<BarData> ApiQueryResponseToBars(PlacesResponse resultData, string radius)
+        private List<BarData> PlaceListToBarList(IEnumerable<PlaceInfo> placeList, string radius)
         {
             var groupList = _applicableGroupsString.Split(',').ToList();
             var groupCategoryList = _applicableGroupCategories.Split(',').ToList();
 
             var barList = new List<BarData>();
-            foreach (var result in resultData.data)
+            foreach (var place in placeList)
             {
-                var distanceMeters = ConvertMilesToMeters(double.Parse(result.distance, CultureInfo.InvariantCulture));
+                var distanceMeters = ConvertMilesToMeters(double.Parse(place.distance, CultureInfo.InvariantCulture));
                 if ((int) distanceMeters > int.Parse(radius, CultureInfo.InvariantCulture)) continue;
-                if (result.locationResponse.groups != null)
+                if (place.locationResponse.groups != null)
                 {
-                    if (result.locationResponse.groups.Exists(x => groupList.Contains(x.name)) &&
-                        result.locationResponse.groups.Any(group => group.categories.Exists(x => groupCategoryList.Contains(x.name))))
+                    if (place.locationResponse.groups.Exists(x => groupList.Contains(x.name)) &&
+                        place.locationResponse.groups.Any(group => group.categories.Exists(x => groupCategoryList.Contains(x.name))))
                     {
-                        AddTripAdvisorPlaceToBars(barList, result);
+                        barList.Add(PlaceToBar(place));
                     }
                 }
-                else if (result.locationResponse.subcategory == null ||
-                         result.locationResponse.subcategory.Exists(x => x.name == "sit_down"))
+                else if (place.locationResponse.subcategory == null ||
+                         place.locationResponse.subcategory.Exists(x => x.name == "sit_down"))
                 {
-                    AddTripAdvisorPlaceToBars(barList, result);
+                    barList.Add(PlaceToBar(place));
                 }
             }
             return barList;
         }
 
-        private void AddTripAdvisorPlaceToBars(ICollection<BarData> barList, PlaceInfo place)
+        private static BarData PlaceToBar(PlaceInfo place)
         {
             var newBar = new BarData
             {
@@ -137,7 +131,7 @@ namespace BeerOverflowWindowsApp.BarProviders
                 Latitude = double.Parse(place.locationResponse.latitude, CultureInfo.InvariantCulture),
                 Longitude = double.Parse(place.locationResponse.longitude, CultureInfo.InvariantCulture)
             };
-            barList.Add(newBar);
+            return newBar;
         }
 
         private static double ConvertMilesToMeters(double miles)

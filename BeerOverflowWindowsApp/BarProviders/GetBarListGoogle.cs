@@ -2,6 +2,7 @@
 using static BeerOverflowWindowsApp.DataModels.GoogleDataModel;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Threading.Tasks;
 using BeerOverflowWindowsApp.DataModels;
 using BeerOverflowWindowsApp.Utilities;
@@ -16,66 +17,62 @@ namespace BeerOverflowWindowsApp.BarProviders
 
         public List<BarData> GetBarsAround(string latitude, string longitude, string radius)
         {
-            List<BarData> barList = null;
-            var result = GetBarData(latitude, longitude, radius);
-            barList = PlacesApiQueryResponseToBars(result);
+            var placeList = GetBarData(latitude, longitude, radius);
+            var barList = PlaceListToBarList(placeList);
             return barList;
         }
 
-        private PlacesApiQueryResponse GetBarData(string latitude, string longitude, string radius)
+        private IEnumerable<Place> GetBarData(string latitude, string longitude, string radius)
         {
             var categoryList = _categoryList.Split(',');
-            var result = new PlacesApiQueryResponse {Results = new List<Result>()};
+            var placeList = new List<Place>();
 
             foreach (var category in categoryList)
             {
                 var link = string.Format(_apiLink, latitude, longitude, radius, category, _apiKey);
-                var response = GetJsonStream(link);
-                var deserialized = JsonConvert.DeserializeObject<PlacesApiQueryResponse>(response);
-                result.Results.AddRange(deserialized.Results);
+                var jsonStream = GetJsonStream(link);
+                var deserialized = JsonConvert.DeserializeObject<PlacesApiQueryResponse>(jsonStream).Results;
+                placeList.AddRange(deserialized);
             }
-            return result;
+            return placeList;
         }
 
         public async Task<List<BarData>> GetBarsAroundAsync(string latitude, string longitude, string radius)
         {
-            List<BarData> barList = null;
-
-            var result = await GetBarDataAsync(latitude, longitude, radius);
-            barList = PlacesApiQueryResponseToBars(result);
-
+            var placeList = await GetBarDataAsync(latitude, longitude, radius);
+            var barList = PlaceListToBarList(placeList);
             return barList;
         }
 
-        private async Task<PlacesApiQueryResponse> GetBarDataAsync(string latitude, string longitude, string radius)
+        private async Task<IEnumerable<Place>> GetBarDataAsync(string latitude, string longitude, string radius)
         {
             var categoryList = _categoryList.Split(',');
-            var result = new PlacesApiQueryResponse { Results = new List<Result>() };
+            var placeList = new List<Place>();
 
             foreach (var category in categoryList)
             {
                 var link = string.Format(_apiLink, latitude, longitude, radius, category, _apiKey);
                 var jsonStream = await GetJsonStreamAsync(link);
-                var deserialized = JsonConvert.DeserializeObject<PlacesApiQueryResponse>(jsonStream);
-                result.Results.AddRange(deserialized.Results);
+                var deserialized = JsonConvert.DeserializeObject<PlacesApiQueryResponse>(jsonStream).Results;
+                placeList.AddRange(deserialized);
             }
-            return result;
+            return placeList;
         }
 
-        private List<BarData> PlacesApiQueryResponseToBars (PlacesApiQueryResponse resultData)
+        private static List<BarData> PlaceListToBarList(IEnumerable<Place> placeList)
         {
-            var barList = new List<BarData>();
-            foreach (var result in resultData.Results)
+            return placeList.Select(PlaceToBar).ToList();
+        }
+
+        private static BarData PlaceToBar(Place place)
+        {
+            var newBar = new BarData
             {
-                var newBar = new BarData
-                {
-                    Title = result.Name,
-                    Latitude = result.Geometry.Location.Lat,
-                    Longitude = result.Geometry.Location.Lng
-                };
-                barList.Add(newBar);
-            }
-            return barList;
+                Title = place.Name,
+                Latitude = place.Geometry.Location.Lat,
+                Longitude = place.Geometry.Location.Lng
+            };
+            return newBar;
         }
     }
 }

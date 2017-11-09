@@ -143,18 +143,11 @@ namespace BeerOverflowWindowsApp
             var response = new List<BarData>();
             try
             {
-                try
-                {
-                    response = await provider.GetBarsAroundAsync(latitude, longitude, radius);
-                }
-                catch (NotImplementedException)
-                {
-                    response = provider.GetBarsAround(latitude, longitude, radius);
-                }
+                response = await provider.GetBarsAroundAsync(latitude, longitude, radius);
             }
-            catch (Exception exception)
+            catch (NotImplementedException)
             {
-                MessageBox.Show("Something went wrong with the message: " + exception.Message);
+                response = provider.GetBarsAround(latitude, longitude, radius);
             }
             return response;
         }
@@ -181,7 +174,7 @@ namespace BeerOverflowWindowsApp
             if (_selectedBar != null && rating != "" && int.TryParse(rating, out ratingNumber))
             {
                 _barRating.AddRating(_selectedBar ,ratingNumber);
-                ReSort();
+                Resort();
             }
         }
 
@@ -247,7 +240,7 @@ namespace BeerOverflowWindowsApp
             }
         }
 
-        private void ReSort()
+        private void Resort()
         {
             var currentSortOrder = SortOrder.None;
             var currentSortColumn = CompareType.None;
