@@ -21,6 +21,7 @@ namespace BeerOverflowWindowsApp.BarProviders
 
         public List<BarData> GetBarsAround(string latitude, string longitude, string radius)
         {
+            RegexTools.LocationDataTextIsCorrect(latitude, longitude, radius);
             var placeList = GetBarData(latitude, longitude);
             var barList = PlaceListToBarList(placeList, radius);
             return barList;
@@ -60,8 +61,9 @@ namespace BeerOverflowWindowsApp.BarProviders
 
         public async Task<List<BarData>> GetBarsAroundAsync(string latitude, string longitude, string radius)
         {
-            var jsonStream = await GetBarDataAsync(latitude, longitude);
-            var barList = PlaceListToBarList(jsonStream, radius);
+            RegexTools.LocationDataTextIsCorrect(latitude, longitude, radius);
+            var placeList = await GetBarDataAsync(latitude, longitude);
+            var barList = PlaceListToBarList(placeList, radius);
             return barList;
         }
 
@@ -128,8 +130,10 @@ namespace BeerOverflowWindowsApp.BarProviders
             var newBar = new BarData
             {
                 Title = place.name,
+                BarId = place.name,   // Temporary solution until we decide on BarId 
                 Latitude = double.Parse(place.locationResponse.latitude, CultureInfo.InvariantCulture),
-                Longitude = double.Parse(place.locationResponse.longitude, CultureInfo.InvariantCulture)
+                Longitude = double.Parse(place.locationResponse.longitude, CultureInfo.InvariantCulture),
+                Ratings = new List<int>()
             };
             return newBar;
         }

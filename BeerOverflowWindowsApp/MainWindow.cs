@@ -11,17 +11,21 @@ using System.Configuration;
 using System.Threading.Tasks;
 using BeerOverflowWindowsApp.BarProviders;
 using BeerOverflowWindowsApp.Utilities;
+using System.Net;
+using BeerOverflowWindowsApp.Exceptions;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using BeerOverflowWindowsApp.Database;
 
 namespace BeerOverflowWindowsApp
 {
     public partial class MainWindow : Form
     {
-        private BarRating _barRating = null;
-        private BarData _selectedBar = null;
         private readonly string _defaultLatitude = ConfigurationManager.AppSettings["defaultLatitude"];
         private readonly string _defaultLongitude = ConfigurationManager.AppSettings["defaultLongitude"];
         private readonly string _defaultRadius = ConfigurationManager.AppSettings["defaultRadius"];
+        private readonly BarRating _barRating = null;
+        private BarData _selectedBar;
+        private MapWindow _mapForm;
 
         public MainWindow()
         {
@@ -29,6 +33,9 @@ namespace BeerOverflowWindowsApp
             _barRating = new BarRating();
             LatitudeTextBox.Text = _defaultLatitude;
             LongitudeTextBox.Text = _defaultLongitude;
+            var latitude = Convert.ToDouble(_defaultLatitude, CultureInfo.InvariantCulture);
+            var longitude = Convert.ToDouble(_defaultLongitude, CultureInfo.InvariantCulture);
+            CurrentLocation.currentLocation = new GeoCoordinate(latitude, longitude);
             RadiusTextBox.Text = _defaultRadius;
         }
 
@@ -43,7 +50,11 @@ namespace BeerOverflowWindowsApp
             BarDataGridView.Rows.Clear();
             foreach (var bar in barData)
             {
-                var rating = bar.Ratings?.Average().ToString("0.00") ?? "0";               
+                string rating;
+                if (bar.Ratings != null && bar.Ratings.Any())
+                    rating = bar.Ratings?.Average().ToString("0.00");
+                else
+                    rating = "0";
                 var distance = bar.DistanceToCurrentLocation.ToString("0");
                 BarDataGridView.Rows.Add(bar.Title, rating, distance);               
             }
@@ -67,12 +78,7 @@ namespace BeerOverflowWindowsApp
             var longitude = GetLongitude();
             var radius = GetRadius();
 
-            if (!RegexTools.LatitudeTextIsCorrect(LatitudeTextBox.Text) || !RegexTools.LongitudeTextIsCorrect(LongitudeTextBox.Text) || !RegexTools.RadiusTextIsCorrect(RadiusTextBox.Text))
-
-            {
-                MessageBox.Show("Please enter correct required data. Erroneus data is painted red.");
-            }
-            else
+            try
             {
                 var providerList = new List<object>
                 {
@@ -84,32 +90,44 @@ namespace BeerOverflowWindowsApp
                 var providerCount = providerList.Count;
                 var progressStep = 100 / providerCount;
                 var result = new BarDataModel();
-                
+
                 var currentProgressValue = 0;
                 GoButton.Enabled = false;
                 InitiateProgressBars();
                 UpdateProgressBars(currentProgressValue);
-
                 foreach (IBeerable provider in providerList)
                 {
-                    result.AddRange(await CollectBarsFromProvider(provider, latitude, longitude, radius));
+                    var barsFromProvider = await CollectBarsFromProvider(provider, latitude, longitude, radius);
+                    result.AddRange(barsFromProvider);
                     currentProgressValue += progressStep;
                     UpdateProgressBars(currentProgressValue);
                 }
-
-                result.CleanUpList(latitude, longitude, radius);
+                result.RemoveDuplicates();
+                result.RemoveBarsOutsideRadius(radius);
                 HideProgressBars();
                 
                 // Display
                 result.GetRatings();
                 _barRating.BarsData = result;
-
                 var currentLocation = GetCurrentLocation();
-                foreach(var bar in _barRating.BarsData)
+                foreach (var bar in _barRating.BarsData)
                 {
-                    bar.DistanceToCurrentLocation = currentLocation.GetDistanceTo(new GeoCoordinate(bar.Latitude, bar.Longitude));
+                    bar.DistanceToCurrentLocation =
+                        currentLocation.GetDistanceTo(new GeoCoordinate(bar.Latitude, bar.Longitude));
                 }
-                SortList(CompareType.Distance, SortOrder.Ascending);
+                SortList(CompareType.Distance);
+            }
+            catch (ArgumentsForProvidersException)
+            {
+                MessageBox.Show("Please enter the required data correctly. Erroneus data is painted red.");
+            }
+            catch (WebException)
+            {
+                MessageBox.Show("There seems to be a problem with the network.");
+            }
+            finally
+            {
+                HideProgressBars();
                 GoButton.Enabled = true;
             }
         }
@@ -149,16 +167,22 @@ namespace BeerOverflowWindowsApp
             {
                 response = provider.GetBarsAround(latitude, longitude, radius);
             }
+            catch (WebException)
+            {
+                throw;
+            }
             return response;
         }
 
         private string GetLatitude()
         {
+            CurrentLocation.currentLocation.Latitude = Convert.ToDouble(LatitudeTextBox.Text, CultureInfo.InvariantCulture);
             return LatitudeTextBox.Text;
         }
 
         private string GetLongitude()
         {
+            CurrentLocation.currentLocation.Longitude = Convert.ToDouble(LongitudeTextBox.Text, CultureInfo.InvariantCulture);
             return LongitudeTextBox.Text;
         }
 
@@ -170,10 +194,10 @@ namespace BeerOverflowWindowsApp
         private void ManualBarRating_Click(object sender, EventArgs e)
         {
             var rating = manualBarRating.Rating;
-            int ratingNumber;
-            if (_selectedBar != null && rating != "" && int.TryParse(rating, out ratingNumber))
+            if (_selectedBar != null && rating != "" && int.TryParse(rating, out int ratingNumber))
             {
                 _barRating.AddRating(_selectedBar ,ratingNumber);
+                _selectedBar.Ratings = new DatabaseManager().GetBarRatings(_selectedBar);
                 Resort();
             }
         }
@@ -187,31 +211,34 @@ namespace BeerOverflowWindowsApp
             }
         }
 
-        private void LongitudeTextBox_TextChanged(object sender, EventArgs e)
+        private void DataTextBoxChanged(TextBox textbox, Func<string, bool> textValidate)
         {
-            if (!RegexTools.LongitudeTextIsCorrect(LongitudeTextBox.Text))
+            var textIsCorrect = false;
+            try
             {
-                PaintTextBoxIncorrect(LongitudeTextBox);
+                textIsCorrect = textValidate(textbox.Text);
             }
-            else { ResetTextBoxColor(LongitudeTextBox); }
+            catch (ArgumentsForProvidersException)
+            {
+                PaintTextBoxIncorrect(textbox);
+            }
+            if (textIsCorrect)
+            { ResetTextBoxColor(textbox); }
         }
 
         private void LatitudeTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (!RegexTools.LatitudeTextIsCorrect(LatitudeTextBox.Text))
-            {
-                PaintTextBoxIncorrect(LatitudeTextBox);
-            }
-            else { ResetTextBoxColor(LatitudeTextBox); }
+            DataTextBoxChanged(LatitudeTextBox, RegexTools.LatitudeTextIsCorrect);
+        }
+
+        private void LongitudeTextBox_TextChanged(object sender, EventArgs e)
+        {
+            DataTextBoxChanged(LongitudeTextBox, RegexTools.LongitudeTextIsCorrect);
         }
 
         private void RadiusTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (!RegexTools.RadiusTextIsCorrect(RadiusTextBox.Text))
-            {
-                PaintTextBoxIncorrect(RadiusTextBox);
-            }
-            else { ResetTextBoxColor(RadiusTextBox); }
+            DataTextBoxChanged(RadiusTextBox, RegexTools.RadiusTextIsCorrect);
         }
 
         private void PaintTextBoxIncorrect(TextBox textBox)
@@ -230,7 +257,6 @@ namespace BeerOverflowWindowsApp
         {
             var columnIndex = (int)compareType - 1;
             var isAscending = sortOrder == SortOrder.Ascending;
-
             if (sortOrder != SortOrder.None)
             {
                 _barRating.Sort(compareType, isAscending);
@@ -244,17 +270,13 @@ namespace BeerOverflowWindowsApp
         {
             var currentSortOrder = SortOrder.None;
             var currentSortColumn = CompareType.None;
-
             foreach (DataGridViewColumn column in BarDataGridView.Columns)
             {
-                if (column.HeaderCell.SortGlyphDirection != SortOrder.None)
-                {
-                    currentSortOrder = column.HeaderCell.SortGlyphDirection;
-                    currentSortColumn = (CompareType) column.Index + 1;
-                    break;
-                }
+                if (column.HeaderCell.SortGlyphDirection == SortOrder.None) continue;
+                currentSortOrder = column.HeaderCell.SortGlyphDirection;
+                currentSortColumn = (CompareType) column.Index + 1;
+                break;
             }
-
             if (currentSortOrder != SortOrder.None && currentSortColumn != CompareType.None)
             {
                 SortList(currentSortColumn, currentSortOrder);
@@ -268,7 +290,6 @@ namespace BeerOverflowWindowsApp
             var toBeSortOrder = currentSortOrder != SortOrder.None
                 ? (currentSortOrder == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending)
                 : SortOrder.Ascending;
-
             SortList((CompareType) e.ColumnIndex + 1, toBeSortOrder);
         }
 
@@ -286,6 +307,25 @@ namespace BeerOverflowWindowsApp
             var currentLongitude = Convert.ToDouble(GetLongitude(), CultureInfo.InvariantCulture);
             var currentLocation = new GeoCoordinate(currentLatitude, currentLongitude);
             return currentLocation;
+        }
+
+        private void MapButton_Click(object sender, EventArgs e)
+        {
+            var latitude = GetLatitude();
+            var longitude = GetLongitude();
+            if (_mapForm == null)
+            {
+                _mapForm = new MapWindow();
+                _mapForm.FormClosed += MapForm_FormClosed;
+            }
+            _mapForm.Show(this);
+            Hide();
+        }
+
+        void MapForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _mapForm = null;
+            Show();
         }
     }
 }

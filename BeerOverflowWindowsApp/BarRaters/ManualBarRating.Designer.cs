@@ -1,6 +1,6 @@
 ﻿namespace BeerOverflowWindowsApp.BarRaters
 {
-    partial class ManualBarRating
+    sealed partial class ManualBarRating
     {
         /// <summary>
         /// Required designer variable.

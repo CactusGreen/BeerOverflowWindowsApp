@@ -1,0 +1,64 @@
+﻿<UserControl
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="BeerOverflowWindowsApp.MapControl"
+       d:DesignWidth="397.65" d:DesignHeight="401.194">
+    <Grid x:Name="LayoutRoot" 
+          Background="White" 
+          MinWidth="100" 
+          MinHeight="100">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="28" />
+            <RowDefinition Height="28" />
+            <RowDefinition Height="28" />
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="176" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <m:Map x:Name="Map" 
+               CredentialsProvider="D0D1Lgede4i57w5QzaRc~2au_CDaqppVK-NBTLRNVIw~AjGeU4vBGNoTvPi97hPUTuieFXffaeZNcqhN-5ViTRP7z0I8hImL_mkm8VF7igLz"
+               Center="54.684815,25.288464" 
+               ZoomLevel="13" 
+               Mode="AerialWithLabels"
+               Grid.ColumnSpan="3"
+               MouseDoubleClick="MapWithPushpins_MouseDoubleClick"/>
+        <Button x:Name="btnCurrentUserLocation"              
+                VerticalAlignment="Center" 
+                UseLayoutRounding="True" 
+                Grid.Row="2" Grid.Column="1"
+                HorizontalAlignment="Center" 
+                Width="150" Height="25"
+                Click="ShowCurrentLocation_Click">
+            <TextBlock FontFamily="Microsoft Sans Serif" 
+                       Grid.IsSharedSizeScope="True">
+                <Run Text="My Location"/></TextBlock>
+        </Button>
+        <Button x:Name="btnChangeMapMode"              
+            VerticalAlignment="Center" 
+            UseLayoutRounding="True" 
+            Grid.Row="3" Grid.Column="1"
+            HorizontalAlignment="Center" 
+            Width="150" Height="25"
+            Click="ChangeMapMode_Click">
+            <TextBlock FontFamily="Microsoft Sans Serif" 
+                       Grid.IsSharedSizeScope="True">
+                <Run Text="Map Mode"/></TextBlock>
+        </Button>
+        <Button x:Name="btnBackToMainWindow"              
+            VerticalAlignment="Center" 
+            UseLayoutRounding="True" 
+            Grid.Row="4" Grid.Column="1"
+            HorizontalAlignment="Center" 
+            Width="150" Height="25"
+            Click="BackToMainWindow_Click">
+            <TextBlock FontFamily="Microsoft Sans Serif" 
+                       Grid.IsSharedSizeScope="True">
+                <Run Text="Back To Ratings"/></TextBlock>
+        </Button>
+    </Grid>
+</UserControl>

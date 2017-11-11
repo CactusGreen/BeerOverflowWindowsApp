@@ -1,10 +1,12 @@
-﻿using System;
+﻿using BeerOverflowWindowsApp.Database;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Device.Location;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using BeerOverflowWindowsApp.Utilities;
 
 namespace BeerOverflowWindowsApp.DataModels
 {
@@ -20,15 +22,7 @@ namespace BeerOverflowWindowsApp.DataModels
         private readonly int _maxSameBarDistanceErrorThresholdMeters =
             int.Parse(ConfigurationManager.AppSettings["maxSameBarDistanceErrorThresholdMeters"], CultureInfo.InvariantCulture);
 
-        public void CleanUpList(string latitude, string longitude, string radius)
-        {
-            RemoveDuplicates();
-            RemoveBarsOutsideRadius(double.Parse(latitude, CultureInfo.InvariantCulture), 
-                                    double.Parse(longitude, CultureInfo.InvariantCulture), 
-                                    double.Parse(radius, CultureInfo.InvariantCulture));
-        }
-
-        private void RemoveDuplicates ()
+        public void RemoveDuplicates()
         {
             var length = this.Count;
 
@@ -132,28 +126,23 @@ namespace BeerOverflowWindowsApp.DataModels
 
         public void GetRatings()
         {
+            var dbManager = new DatabaseManager();
             foreach (var bar in this)
             {
-                bar.Ratings = BarFileReader.GetBarRatings(bar);
+                bar.Ratings = dbManager.GetBarRatings(bar);
             }
         }
 
-        private void RemoveBarsOutsideRadius(double latitude, double longitude, double radius)
+        public void RemoveBarsOutsideRadius(string radius)
         {
-            var barsToRemove = this.Where(bar => !IsWithinRadius(bar, latitude, longitude, radius)).ToList();
-
+            RegexTools.RadiusTextIsCorrect(radius);
+            var numRadius = double.Parse(radius, CultureInfo.InvariantCulture);
+            var barsToRemove = new List<BarData>(_maxSameBarDistanceErrorThresholdMeters);
+            barsToRemove.AddRange(this.Where(bar => bar.DistanceToCurrentLocation > numRadius));
             foreach (var bar in barsToRemove)
             {
                 this.Remove(bar);
             }
-        }
-
-        private bool IsWithinRadius(BarData bar, double latitude, double longitude, double radius)
-        {
-            var barLocation = new GeoCoordinate(bar.Latitude, bar.Longitude);
-            var currentLocation = new GeoCoordinate(latitude, longitude);
-            var distance = currentLocation.GetDistanceTo(barLocation);
-            return distance.CompareTo(radius) <= 0;
         }
     }
 }

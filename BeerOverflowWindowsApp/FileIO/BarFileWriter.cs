@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace BeerOverflowWindowsApp
+namespace BeerOverflowWindowsApp.FileIO
 {
     static class BarFileWriter
     {

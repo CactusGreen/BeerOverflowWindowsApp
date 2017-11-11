@@ -1,6 +1,6 @@
-﻿using BeerOverflowWindowsApp.DataModels;
+﻿using System;
+using BeerOverflowWindowsApp.DataModels;
 using System.Collections.Generic;
-using System.Device.Location;
 
 namespace BeerOverflowWindowsApp.BarComparers
 {
@@ -8,22 +8,38 @@ namespace BeerOverflowWindowsApp.BarComparers
     {
         public int Compare(BarData barData1, BarData barData2)
         {
-            int result;
-            var distance1 = barData1.DistanceToCurrentLocation;
-            var distance2 = barData2.DistanceToCurrentLocation;
-            if (distance1 == distance2)
+            if (barData1 != null && barData2 != null)
             {
-                result = 0;
-            }
-            else if (distance1 > distance2)
-            {
-                result = 1;
+                int result;
+                var distance1 = barData1.DistanceToCurrentLocation;
+                var distance2 = barData2.DistanceToCurrentLocation;
+                if (distance1 == distance2)
+                {
+                    result = 0;
+                }
+                else if (distance1 > distance2)
+                {
+                    result = 1;
+                }
+                else
+                {
+                    result = -1;
+                }
+                return result;
             }
             else
             {
-                result = -1;
+                var nullArguments = new List<string>();
+                if (barData1 == null)
+                {
+                    nullArguments.Add(nameof(barData1)); 
+                }
+                if (barData2 == null)
+                {
+                    nullArguments.Add(nameof(barData2));
+                }
+                throw new ArgumentNullException(string.Join(",", nullArguments));
             }
-            return result;
         }
     }
 }

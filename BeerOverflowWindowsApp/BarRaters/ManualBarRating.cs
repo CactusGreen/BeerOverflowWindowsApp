@@ -9,9 +9,9 @@ using BeerOverflowWindowsApp.Properties;
 
 namespace BeerOverflowWindowsApp.BarRaters
 {
-    public partial class ManualBarRating : Control
+    public sealed partial class ManualBarRating : Control
     {
-        List<Rectangle> beerGlassList;
+        private List<Rectangle> beerGlassList;
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         private int imageSize;
         public int ImageSize
@@ -23,7 +23,7 @@ namespace BeerOverflowWindowsApp.BarRaters
                 this.SetImages();
                 this.MinimumSize = new Size(imageSize * 5, imageSize);
                 this.MaximumSize = new Size(imageSize * 5, imageSize);
-                for (int i = 0; i < 5; i++)
+                for (var i = 0; i < 5; i++)
                 {
                     beerGlassList[i] = (new Rectangle(i * imageSize, 0, imageSize, imageSize));
                 }
@@ -36,7 +36,8 @@ namespace BeerOverflowWindowsApp.BarRaters
             get { return numberOfGlasses + 1 + ""; }
             private set { }
         }
-        ToolTip toolTip;
+
+        private ToolTip toolTip;
         public ManualBarRating()
         {
             this.DoubleBuffered = true;
@@ -45,34 +46,33 @@ namespace BeerOverflowWindowsApp.BarRaters
             this.MinimumSize = new Size(imageSize * 5, imageSize);
             this.MaximumSize = new Size(imageSize * 5, imageSize);
             this.beerGlassList = new List<Rectangle>(5);
-            for(int i = 0; i < 5; i++)
+            for(var i = 0; i < 5; i++)
             {
                 beerGlassList.Add(new Rectangle(i * imageSize, 0, imageSize, imageSize));
             }
             SetImages();
-            toolTip = new ToolTip();
-            toolTip.ShowAlways = true;
+            toolTip = new ToolTip {ShowAlways = true};
             Refresh();
         }
 
-        Image selectedImage;
-        Image unSelectedImage;
+        private Image selectedImage;
+        private Image unSelectedImage;
         protected override void OnPaint(PaintEventArgs pe)
         {
-            Graphics g = pe.Graphics;
-            for (int i = 0; i <= numberOfGlasses; i++)
+            var g = pe.Graphics;
+            for (var i = 0; i <= numberOfGlasses; i++)
             {
                 g.DrawImageUnscaledAndClipped(selectedImage, beerGlassList[i]);
             }
-            for(int i = numberOfGlasses + 1; i < 5; i++)
+            for(var i = numberOfGlasses + 1; i < 5; i++)
             {
                 g.DrawImageUnscaledAndClipped(unSelectedImage, beerGlassList[i]);
             }
         }
 
-        Boolean mouseEntered = false;
+        private bool mouseEntered = false;
         private int numberOfGlasses = 0;
-        private void ManualBarRating_MouseEnter(object sender, System.EventArgs e)
+        private void ManualBarRating_MouseEnter(object sender, EventArgs e)
         {
             mouseEntered = true;
         }
@@ -82,8 +82,8 @@ namespace BeerOverflowWindowsApp.BarRaters
         private const string toolTipMessage3 = "Meh";
         private const string toolTipMessage4 = "Good enough";
         private const string toolTipMessage5 = "Beeroverflow!";
-        private string[] toolTipMessages = new string[5] {toolTipMessage1, toolTipMessage2, toolTipMessage3, toolTipMessage4, toolTipMessage5 };
-        int lastLocation = -1;
+        private string[] toolTipMessages = new string[] {toolTipMessage1, toolTipMessage2, toolTipMessage3, toolTipMessage4, toolTipMessage5 };
+        private int lastLocation = -1;
         private void ManualBarRating_MouseMove(object sender, MouseEventArgs e)
         {
             if (ClientRectangle.Contains(e.Location))
@@ -103,7 +103,7 @@ namespace BeerOverflowWindowsApp.BarRaters
             }
         }
 
-        private void ManualBarRating_MouseLeave(object sender, System.EventArgs e)
+        private void ManualBarRating_MouseLeave(object sender, EventArgs e)
         {
             lastLocation = -1;
             toolTip.Hide(this);
@@ -114,7 +114,7 @@ namespace BeerOverflowWindowsApp.BarRaters
 
         private void SelectRating(Point point)
         {
-            for (int i = 4; i >= 0; i--)
+            for (var i = 4; i >= 0; i--)
             {
                 if (beerGlassList[i].Contains(point))
                 {

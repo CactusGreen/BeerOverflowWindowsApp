@@ -13,10 +13,14 @@ _ _ _
 - Place sorting by distance, rating, name.
 - Two UI components for bar rating. Currently using one.
 - Moderately cute UI.
+- Use databases.
+- Show map.
 
 _ _ _
 ## To Be Done
 - Show bars on the map.
+- Beer amount recognition from camera input.
+- BeerOverflow as a service.
 - ???
 
 _ _ _

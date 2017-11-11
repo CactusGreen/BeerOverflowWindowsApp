@@ -1,21 +1,31 @@
-﻿using Newtonsoft.Json;
+﻿using BeerOverflowWindowsApp.Database;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeerOverflowWindowsApp.DataModels
 {
-    public class BarData
+    [Table("Bar")]
+    public class BarData : IEquatable<BarData>
     {
+        public BarData() { }
+
         public string Title { get; set; }
-        public string Id { get; set; }
+        [Key]
+        public string BarId { get; set; }
         public List<int> Ratings { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
 
-        public BarData()
-        {
-            Ratings = new List<int>();
-        }
-        [JsonIgnore]
+        public virtual ICollection<UsersRatingToBar> UserRatings { get; set; }
+
+        [NotMapped]
         public double DistanceToCurrentLocation { get; set; }
+
+        public bool Equals(BarData other)
+        {
+            return this.Title == other.Title ? true : false;
+        }
     }
 }

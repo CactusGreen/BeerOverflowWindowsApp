@@ -20,8 +20,9 @@ namespace BeerOverflowWindowsApp.BarProviders
 
         public List<BarData> GetBarsAround(string latitude, string longitude, string radius)
         {
-            var placesFromFacebook = GetBarData(latitude, longitude, radius);
-            var barList = PlaceListToBarList(placesFromFacebook);
+            RegexTools.LocationDataTextIsCorrect(latitude, longitude, radius);
+            var placeList = GetBarData(latitude, longitude, radius);
+            var barList = PlaceListToBarList(placeList);
             return barList;
         }
 
@@ -35,13 +36,15 @@ namespace BeerOverflowWindowsApp.BarProviders
 
         public async Task<List<BarData>> GetBarsAroundAsync(string latitude, string longitude, string radius)
         {
-            var placesFromFacebook = await GetBarDataAsync(latitude, longitude, radius);
-            var barList = PlaceListToBarList(placesFromFacebook);
+            RegexTools.LocationDataTextIsCorrect(latitude, longitude, radius);
+            var placeList = await GetBarDataAsync(latitude, longitude, radius);
+            var barList = PlaceListToBarList(placeList);
             return barList;
         }
 
         private async Task<List<Place>> GetBarDataAsync(string latitude, string longitude, string radius)
         {
+            RegexTools.LocationDataTextIsCorrect(latitude, longitude, radius);
             var link = string.Format(_apiLink, _accessToken, latitude, longitude, radius, _requestedFields, _category);
             var jsonStream = await GetJsonStreamAsync(link);
             var barList = JsonConvert.DeserializeObject<PlacesResponse>(jsonStream).data;
@@ -70,8 +73,10 @@ namespace BeerOverflowWindowsApp.BarProviders
             var newBar = new BarData
             {
                 Title = place.name,
+                BarId = place.name,   // Temporary solution until we decide on BarId 
                 Latitude = place.location.latitude,
-                Longitude = place.location.longitude
+                Longitude = place.location.longitude,
+                Ratings = new List<int>()
             };
             return newBar;
         }

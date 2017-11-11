@@ -48,6 +48,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Maps.MapControl.WPF">
+      <HintPath>..\Libraries\Microsoft.Maps.MapControl.WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
@@ -57,10 +66,14 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Device" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -70,20 +83,43 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BarComparers\ComparerByDistance.cs" />
     <Compile Include="BarComparers\ComparerByRating.cs" />
     <Compile Include="BarComparers\ComparerByTitle.cs" />
-    <Compile Include="BarComparers\ComparerType.cs" />
+    <Compile Include="BarComparers\CompareType.cs" />
     <Compile Include="BarRating.cs" />
     <Compile Include="DataModels\FourSquareDataModel.cs" />
     <Compile Include="Utilities\JsonFetcher.cs" />
     <Compile Include="Utilities\RegexTools.cs" />
+    <Compile Include="Exceptions\ArgumentsForProvidersException.cs" />
+    <Compile Include="MapControl.xaml.cs">
+      <DependentUpon>MapControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MapWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MapWindow.Designer.cs">
+      <DependentUpon>MapWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Database\BarsDatabase.cs" />
+    <Compile Include="Database\DatabaseManager.cs" />
+    <Compile Include="Migrations\201711071344345_InitialCreate.cs" />
+    <Compile Include="Migrations\201711071344345_InitialCreate.Designer.cs">
+      <DependentUpon>201711071344345_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201711072027400_AddUserComments.cs" />
+    <Compile Include="Migrations\201711072027400_AddUserComments.Designer.cs">
+      <DependentUpon>201711072027400_AddUserComments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="DataModels\BarData.cs" />
     <Compile Include="DataModels\BarDataModel.cs" />
-    <Compile Include="BarFileReader.cs" />
-    <Compile Include="BarFileWriter.cs" />
+    <Compile Include="FileIO\BarFileReader.cs" />
+    <Compile Include="FileIO\BarFileWriter.cs" />
     <Compile Include="DataModels\TripAdvisorDataModel.cs" />
     <Compile Include="BarProviders\GetBarListTripAdvisor.cs" />
     <Compile Include="DataModels\FacebookDataModel.cs" />
@@ -113,6 +149,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Database\User.cs" />
+    <Compile Include="Database\UsersRatingToBar.cs" />
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -121,6 +159,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BarRaters\ManualBeerMeter.resx">
       <DependentUpon>ManualBeerMeter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MapWindow.resx">
+      <DependentUpon>MapWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711071344345_InitialCreate.resx">
+      <DependentUpon>201711071344345_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711072027400_AddUserComments.resx">
+      <DependentUpon>201711072027400_AddUserComments.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -166,6 +213,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\LightBeerGlass.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MapControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

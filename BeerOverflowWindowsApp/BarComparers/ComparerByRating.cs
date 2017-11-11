@@ -29,8 +29,8 @@ namespace BeerOverflowWindowsApp.BarComparers
             }
             else
             {
-                var bar1RatingAverage = barData1.Ratings.Average();
-                var bar2RatingAverage = barData2.Ratings.Average();
+                var bar1RatingAverage = barData1.Ratings.DefaultIfEmpty().Average();
+                var bar2RatingAverage = barData2.Ratings.DefaultIfEmpty().Average();
 
                 result = bar1RatingAverage == bar2RatingAverage
                     ? 0 
