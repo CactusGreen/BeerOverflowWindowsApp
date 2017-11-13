@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System;
 using System.Configuration;
 using System.Globalization;
+using BeerOverflowWindowsApp.DataModels;
 
 namespace BeerOverflowWindowsApp
 {
@@ -13,21 +14,25 @@ namespace BeerOverflowWindowsApp
     public partial class MapControl
     {
         private readonly string _defaultStartingZoom = ConfigurationManager.AppSettings["map_startingZoomLevel"];
-        private readonly string _defaultCurrentLocationZoom =
-            ConfigurationManager.AppSettings["map_currentLocationZoomLevel"];
+        private readonly string _defaultCurrentLocationZoom = ConfigurationManager.AppSettings["map_currentLocationZoomLevel"];
 
-        public MapControl()
+        public MapControl(BarDataModel barList)
         {
+            if (CurrentLocation.currentLocation == null) { throw new ArgumentNullException(); }
+            if (barList == null) { throw new ArgumentNullException(nameof(barList)); }
             InitializeComponent();
-            if (CurrentLocation.currentLocation != null)
+            var latitude = CurrentLocation.currentLocation.Latitude;
+            var longitude = CurrentLocation.currentLocation.Longitude;
+            var center = new Location(latitude, longitude);
+            var pin = new Pushpin { Location = center };
+            var zoom = Convert.ToDouble(_defaultStartingZoom, CultureInfo.InvariantCulture);
+            Map.Children.Add(pin);
+            Map.SetView(center, zoom);
+            foreach (var bar in barList)
             {
-                var latitude = CurrentLocation.currentLocation.Latitude;
-                var longitude = CurrentLocation.currentLocation.Longitude;
-                var center = new Location(latitude, longitude);
-                var pin = new Pushpin { Location = center };
-                var zoom = Convert.ToDouble(_defaultStartingZoom, CultureInfo.InvariantCulture);
-                Map.Children.Add(pin);
-                Map.SetView(center, zoom);
+                var barLocation = new Location(bar.Latitude, bar.Longitude);
+                var barPin = new Pushpin { Location = barLocation };
+                Map.Children.Add(barPin);
             }
         }
 

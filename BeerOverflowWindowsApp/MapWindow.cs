@@ -7,9 +7,11 @@ namespace BeerOverflowWindowsApp
 {
     public partial class MapWindow : Form
     {
-        public MapWindow()
+        public MapWindow(){}
+
+        public MapWindow(BarDataModel listOfBars)
         {
-            InitializeComponent();
+            InitializeComponent(listOfBars);
         }
 
         public void MapWindowForm()

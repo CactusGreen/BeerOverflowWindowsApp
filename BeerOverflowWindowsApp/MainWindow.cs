@@ -317,7 +317,7 @@ namespace BeerOverflowWindowsApp
         {
             if (_mapForm == null)
             {
-                _mapForm = new MapWindow();
+                _mapForm = new MapWindow(ListOfBars);
                 _mapForm.FormClosed += MapForm_FormClosed;
             }
             _mapForm.Show(this);

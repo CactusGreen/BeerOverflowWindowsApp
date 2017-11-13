@@ -1,4 +1,6 @@
-﻿namespace BeerOverflowWindowsApp
+﻿using BeerOverflowWindowsApp.DataModels;
+
+namespace BeerOverflowWindowsApp
 {
     partial class MapWindow
     {
@@ -26,10 +28,11 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
+        /// <param name="listOfBars"></param>
+        private void InitializeComponent(BarDataModel listOfBars)
         {
             this.elementMap = new System.Windows.Forms.Integration.ElementHost();
-            this.mapControl = new BeerOverflowWindowsApp.MapControl();
+            this.mapControl = new BeerOverflowWindowsApp.MapControl(listOfBars);
             this.SuspendLayout();
             // 
             // elementMap
