@@ -3,7 +3,9 @@ using System.Windows;
 using System.Windows.Input;
 using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Globalization;
+using System.Windows.Media;
 using BeerOverflowWindowsApp.DataModels;
 
 namespace BeerOverflowWindowsApp
@@ -15,32 +17,35 @@ namespace BeerOverflowWindowsApp
     {
         private readonly string _defaultStartingZoom = ConfigurationManager.AppSettings["map_startingZoomLevel"];
         private readonly string _defaultCurrentLocationZoom = ConfigurationManager.AppSettings["map_currentLocationZoomLevel"];
+        private readonly double _latitude = CurrentLocation.currentLocation.Latitude;
+        private readonly double _longitude = CurrentLocation.currentLocation.Longitude;
 
         public MapControl(BarDataModel barList)
         {
             if (CurrentLocation.currentLocation == null) { throw new ArgumentNullException(); }
             if (barList == null) { throw new ArgumentNullException(nameof(barList)); }
             InitializeComponent();
-            var latitude = CurrentLocation.currentLocation.Latitude;
-            var longitude = CurrentLocation.currentLocation.Longitude;
-            var center = new Location(latitude, longitude);
+            var center = new Location(_latitude, _longitude);
             var pin = new Pushpin { Location = center };
-            var zoom = Convert.ToDouble(_defaultStartingZoom, CultureInfo.InvariantCulture);
+            pin.Background = new SolidColorBrush(Colors.Blue);
             Map.Children.Add(pin);
+            var zoom = Convert.ToDouble(_defaultStartingZoom, CultureInfo.InvariantCulture);
             Map.SetView(center, zoom);
             foreach (var bar in barList)
             {
                 var barLocation = new Location(bar.Latitude, bar.Longitude);
-                var barPin = new Pushpin { Location = barLocation };
+                var barPin = new Pushpin
+                {
+                    Location = barLocation,
+                    Background = new SolidColorBrush(Colors.OliveDrab)
+                };
                 Map.Children.Add(barPin);
             }
         }
 
         private void ShowCurrentLocation_Click(object sender, RoutedEventArgs e)
         {
-            var latitude = CurrentLocation.currentLocation.Latitude;
-            var longitude = CurrentLocation.currentLocation.Longitude;
-            var center = new Location(latitude, longitude);
+            var center = new Location(_latitude, _longitude);
             var zoom = Convert.ToDouble(_defaultCurrentLocationZoom, CultureInfo.InvariantCulture);
             Map.SetView(center, zoom);
         }
