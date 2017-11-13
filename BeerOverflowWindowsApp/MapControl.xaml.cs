@@ -13,9 +13,9 @@ namespace BeerOverflowWindowsApp
     public partial class MapControl
     {
         private readonly string _defaultStartingZoom = ConfigurationManager.AppSettings["map_startingZoomLevel"];
-
         private readonly string _defaultCurrentLocationZoom =
             ConfigurationManager.AppSettings["map_currentLocationZoomLevel"];
+
         public MapControl()
         {
             InitializeComponent();

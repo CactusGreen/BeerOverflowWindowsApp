@@ -30,6 +30,7 @@ namespace BeerOverflowWindowsApp
         public MainWindow()
         {
             InitializeComponent();
+            MapButton.Enabled = false;
             _barRating = new BarRating();
             LatitudeTextBox.Text = _defaultLatitude;
             LongitudeTextBox.Text = _defaultLongitude;
@@ -39,14 +40,16 @@ namespace BeerOverflowWindowsApp
             RadiusTextBox.Text = _defaultRadius;
         }
 
-        public void ReloadDataGrid(bool completely = false)
+        private BarDataModel ListOfBars => _barRating.BarsData;
+
+        private void ReloadDataGrid(bool completely = false)
         {
             if (completely)
             {
                 BarDataGridView_ClearHeaderSortGlyphs();
             }
 
-            var barData = _barRating.BarsData;
+            var barData = ListOfBars;
             BarDataGridView.Rows.Clear();
             foreach (var bar in barData)
             {
@@ -129,6 +132,7 @@ namespace BeerOverflowWindowsApp
             {
                 HideProgressBars();
                 GoButton.Enabled = true;
+                MapButton.Enabled = true;
             }
         }
 
@@ -311,8 +315,6 @@ namespace BeerOverflowWindowsApp
 
         private void MapButton_Click(object sender, EventArgs e)
         {
-            var latitude = GetLatitude();
-            var longitude = GetLongitude();
             if (_mapForm == null)
             {
                 _mapForm = new MapWindow();
