@@ -1,5 +1,4 @@
 ﻿using BeerOverflowWindowsApp.DataModels;
-using FourSquare.SharpSquare.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

@@ -11,6 +11,7 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -23,7 +24,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -73,6 +73,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Device" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -106,18 +107,6 @@
     <Compile Include="MapWindow.Designer.cs">
       <DependentUpon>MapWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Database\BarsDatabase.cs" />
-    <Compile Include="Database\DatabaseManager.cs" />
-    <Compile Include="Migrations\201711071344345_InitialCreate.cs" />
-    <Compile Include="Migrations\201711071344345_InitialCreate.Designer.cs">
-      <DependentUpon>201711071344345_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711072027400_AddUserComments.cs" />
-    <Compile Include="Migrations\201711072027400_AddUserComments.Designer.cs">
-      <DependentUpon>201711072027400_AddUserComments.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="RegexTools.cs" />
     <Compile Include="DataModels\BarData.cs" />
     <Compile Include="DataModels\BarDataModel.cs" />
     <Compile Include="FileIO\BarFileReader.cs" />

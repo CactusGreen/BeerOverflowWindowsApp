@@ -208,7 +208,7 @@ namespace BeerOverflowWindowsApp
             {
                 _barRating.AddRating(_selectedBar, ratingNumber);
                 _selectedBar.Ratings = WebApiAccess.GetBarRatings(_selectedBar);
-                ReSort();
+                Resort();
             }
         }
 
