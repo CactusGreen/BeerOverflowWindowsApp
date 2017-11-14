@@ -29,7 +29,18 @@ namespace BeerOverflowWindowsApp
         }
         public static BarDataModel GetAllBarData(BarDataModel localBars)
         {
-            return null;
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:1726/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var json = JsonConvert.SerializeObject(localBars);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = client.PostAsync("Api/Data/GetAllBarData", content);
+                var ab = response.Result.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<BarDataModel>(ab.Result);
+                return result;
+            }
         }
         public static void SaveBarRating(BarData barToRate, int rating)
         {
