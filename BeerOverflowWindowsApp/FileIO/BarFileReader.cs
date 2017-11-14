@@ -1,10 +1,10 @@
-﻿using BeerOverflowWindowsApp.DataModels;
+﻿using WebApi.DataModels;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 
-namespace BeerOverflowWindowsApp.FileIO
+namespace WebApi.FileIO
 {
     static class BarFileReader
     {

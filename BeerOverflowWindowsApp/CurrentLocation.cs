@@ -1,6 +1,6 @@
 ﻿using System.Device.Location;
 
-namespace BeerOverflowWindowsApp
+namespace WebApi
 {
     static class CurrentLocation
     {

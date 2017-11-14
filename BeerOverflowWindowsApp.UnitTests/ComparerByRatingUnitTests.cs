@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using BeerOverflowWindowsApp.BarComparers;
-using BeerOverflowWindowsApp.DataModels;
+using WebApi.BarComparers;
+using WebApi.DataModels;
 using NUnit.Framework;
 
-namespace BeerOverflowWindowsApp.UnitTests
+namespace WebApi.UnitTests
 {
     [TestFixture]
     public class ComparerByRatingUnitTests

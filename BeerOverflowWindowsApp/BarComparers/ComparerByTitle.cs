@@ -1,8 +1,8 @@
 ﻿using System;
-using BeerOverflowWindowsApp.DataModels;
+using WebApi.DataModels;
 using System.Collections.Generic;
 
-namespace BeerOverflowWindowsApp.BarComparers
+namespace WebApi.BarComparers
 {
     public class ComparerByTitle : IComparer<BarData>
     {

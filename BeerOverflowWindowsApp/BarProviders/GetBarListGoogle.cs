@@ -1,13 +1,13 @@
 ﻿using System;
 using Newtonsoft.Json;
-using static BeerOverflowWindowsApp.DataModels.GoogleDataModel;
+using static WebApi.DataModels.GoogleDataModel;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net;
 using System.Text;
-using BeerOverflowWindowsApp.DataModels;
+using WebApi.DataModels;
 
-namespace BeerOverflowWindowsApp.BarProviders
+namespace WebApi.BarProviders
 {
     class GetBarListGoogle : IBeerable
     {

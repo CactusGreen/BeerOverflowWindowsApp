@@ -1,4 +1,4 @@
-namespace BeerOverflowWindowsApp.Migrations
+namespace WebApi.Migrations
 {
     using System.Data.Entity.Migrations;
     

@@ -1,9 +1,9 @@
 ﻿using System;
-using BeerOverflowWindowsApp.DataModels;
+using WebApi.DataModels;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BeerOverflowWindowsApp.BarComparers
+namespace WebApi.BarComparers
 {
     class ComparerByRating : IComparer<BarData>
     {

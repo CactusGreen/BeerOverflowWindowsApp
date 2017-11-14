@@ -1,7 +1,7 @@
-﻿using BeerOverflowWindowsApp.DataModels;
+﻿using WebApi.DataModels;
 using System.Collections.Generic;
 
-namespace BeerOverflowWindowsApp
+namespace WebApi
 {
     interface IBeerable
     {

@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity;
-using BeerOverflowWindowsApp.DataModels;
+using WebApi.DataModels;
 
-namespace BeerOverflowWindowsApp.Database
+namespace WebApi.Database
 {
     public class BarsDatabase : DbContext
     {

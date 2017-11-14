@@ -3,9 +3,9 @@ using System.Configuration;
 using System.Globalization;
 using FourSquare.SharpSquare.Core;
 using FourSquare.SharpSquare.Entities;
-using BeerOverflowWindowsApp.DataModels;
+using WebApi.DataModels;
 
-namespace BeerOverflowWindowsApp.BarProviders
+namespace WebApi.BarProviders
 {
     class GetBarListFourSquare : IBeerable
     {

@@ -1,4 +1,4 @@
-﻿namespace BeerOverflowWindowsApp.BarComparers
+﻿namespace WebApi.BarComparers
 {
     public enum CompareType
     {

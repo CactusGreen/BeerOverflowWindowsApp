@@ -5,7 +5,7 @@ using System;
 using System.Configuration;
 using System.Globalization;
 
-namespace BeerOverflowWindowsApp
+namespace WebApi
 {
     /// <summary>
     /// Interaction logic for MapControl.xaml

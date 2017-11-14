@@ -1,5 +1,5 @@
-﻿using BeerOverflowWindowsApp.Database;
-using BeerOverflowWindowsApp.DataModels;
+﻿using WebApi.Database;
+using WebApi.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +7,13 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using System.Web.Http.Description;
 
 namespace WebApi.Controllers
 {
     public class DataController : ApiController
     {
+
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
         public BarDataModel GetAllBarData([FromBody]BarDataModel localBars)
@@ -20,21 +22,22 @@ namespace WebApi.Controllers
             BarDataModel result = dbManager.GetAllBarData(localBars);            
             return result;
         }
-
-        [HttpPost]
-        public IHttpActionResult SaveBarRating([FromBody] BarData barToRate, int rating)
-        {
-            var dbManager = new DatabaseManager();
-            dbManager.SaveBarRating(barToRate, rating);
-            return Ok("Success");
-        }
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
-        public List<int> GetBarRatings([FromBody]BarData localBars)
+        public IHttpActionResult SaveBarRating([FromBody] RatingModel barObject)
         {
             var dbManager = new DatabaseManager();
-            var result = dbManager.GetBarRatings(localBars);
-            return result;
+            dbManager.SaveBarRating(barObject.barData, barObject.rating);
+            return Ok("Success");
+        }
+
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        [HttpPost]
+        public IHttpActionResult GetBarRatings([FromBody]BarData localBars)
+        {
+            var dbManager = new DatabaseManager();
+            List<int> result = dbManager.GetBarRatings(localBars);
+            return Ok(result);
         }
     }
 }

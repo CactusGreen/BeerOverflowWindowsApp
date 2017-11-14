@@ -1,4 +1,4 @@
-﻿namespace BeerOverflowWindowsApp
+﻿namespace WebApi
 {
     partial class MapWindow
     {
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.elementMap = new System.Windows.Forms.Integration.ElementHost();
-            this.mapControl = new BeerOverflowWindowsApp.MapControl();
+            this.mapControl = new WebApi.MapControl();
             this.SuspendLayout();
             // 
             // elementMap

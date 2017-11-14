@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Globalization;
-using BeerOverflowWindowsApp.DataModels;
-using BeerOverflowWindowsApp.Exceptions;
+using WebApi.DataModels;
+using WebApi.Exceptions;
 using NUnit.Framework;
 
-namespace BeerOverflowWindowsApp.UnitTests
+namespace WebApi.UnitTests
 {
     [TestFixture]
     public class BarDataModelUnitTests

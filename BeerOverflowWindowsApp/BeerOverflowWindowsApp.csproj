@@ -96,6 +96,7 @@
     <Compile Include="BarComparers\ComparerByTitle.cs" />
     <Compile Include="BarComparers\CompareType.cs" />
     <Compile Include="BarRating.cs" />
+    <Compile Include="DataModels\RatingModel.cs" />
     <Compile Include="Exceptions\ArgumentsForProvidersException.cs" />
     <Compile Include="MapControl.xaml.cs">
       <DependentUpon>MapControl.xaml</DependentUpon>

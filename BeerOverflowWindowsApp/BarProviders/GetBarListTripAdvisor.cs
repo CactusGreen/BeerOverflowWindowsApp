@@ -5,10 +5,10 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
-using BeerOverflowWindowsApp.DataModels;
-using static BeerOverflowWindowsApp.DataModels.TripAdvisorDataModel;
+using WebApi.DataModels;
+using static WebApi.DataModels.TripAdvisorDataModel;
 
-namespace BeerOverflowWindowsApp.BarProviders
+namespace WebApi.BarProviders
 {
     class GetBarListTripAdvisor : IBeerable
     {

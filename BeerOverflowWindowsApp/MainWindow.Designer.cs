@@ -1,6 +1,6 @@
-﻿using BeerOverflowWindowsApp.BarRaters;
+﻿using WebApi.BarRaters;
 
-namespace BeerOverflowWindowsApp
+namespace WebApi
 {
     partial class MainWindow
     {
@@ -44,7 +44,7 @@ namespace BeerOverflowWindowsApp
             this.GoButton = new System.Windows.Forms.Button();
             this.RadiusTextBox = new System.Windows.Forms.TextBox();
             this.MapButton = new System.Windows.Forms.Button();
-            this.manualBarRating = new BeerOverflowWindowsApp.BarRaters.ManualBarRating();
+            this.manualBarRating = new WebApi.BarRaters.ManualBarRating();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BarDataGridView)).BeginInit();

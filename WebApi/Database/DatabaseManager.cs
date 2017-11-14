@@ -1,8 +1,8 @@
-﻿using BeerOverflowWindowsApp.DataModels;
+﻿using WebApi.DataModels;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BeerOverflowWindowsApp.Database
+namespace WebApi.Database
 {
     public class DatabaseManager
     {

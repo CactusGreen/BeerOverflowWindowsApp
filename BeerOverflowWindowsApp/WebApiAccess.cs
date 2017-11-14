@@ -1,4 +1,4 @@
-﻿using BeerOverflowWindowsApp.DataModels;
+﻿using WebApi.DataModels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BeerOverflowWindowsApp
+namespace WebApi
 {
     static class WebApiAccess
     {
@@ -22,8 +22,9 @@ namespace BeerOverflowWindowsApp
                 var json = JsonConvert.SerializeObject(bar);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = client.PostAsync("Api/Data/GetBarRatings", content);
-                var aa = response.Result;
-                return null;
+                var ab = response.Result.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<int>>(ab.Result);
+                return result;
             }
         }
         public static BarDataModel GetAllBarData(BarDataModel localBars)
@@ -37,10 +38,9 @@ namespace BeerOverflowWindowsApp
                 client.BaseAddress = new Uri("http://localhost:1726/");
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var json = JsonConvert.SerializeObject(barToRate);
+                var json = JsonConvert.SerializeObject(new RatingModel{barData = barToRate, rating = rating});
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = client.PostAsync("Api/Data/GetBarRatings", content);
-                var aa = response.Result;
+                var response = client.PostAsync("Api/Data/SaveBarRating", content).Result;
             }
         }
     }

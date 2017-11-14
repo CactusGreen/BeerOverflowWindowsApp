@@ -1,8 +1,8 @@
 ﻿using System;
-using BeerOverflowWindowsApp.BarComparers;
+using WebApi.BarComparers;
 using NUnit.Framework;
 
-namespace BeerOverflowWindowsApp.UnitTests
+namespace WebApi.UnitTests
 {
     [TestFixture]
     public class BarRatingUnitTests

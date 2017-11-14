@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace BeerOverflowWindowsApp
+namespace WebApi
 {
     public partial class MapWindow : Form
     {
