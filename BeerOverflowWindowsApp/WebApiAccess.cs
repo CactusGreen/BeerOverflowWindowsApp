@@ -27,7 +27,7 @@ namespace BeerOverflowWindowsApp
                 return result;
             }
         }
-        public static BarDataModel GetAllBarData(BarDataModel localBars)
+        public static List<BarData> GetAllBarData(BarDataModel localBars)
         {
             using (var client = new HttpClient())
             {

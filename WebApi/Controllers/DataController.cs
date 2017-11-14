@@ -16,11 +16,11 @@ namespace WebApi.Controllers
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
-        public BarDataModel GetAllBarData([FromBody]BarDataModel localBars)
+        public IHttpActionResult GetAllBarData([FromBody]List<BarData> localBars)
         {
             var dbManager = new DatabaseManager();
-            BarDataModel result = dbManager.GetAllBarData(localBars);            
-            return result;
+            List<BarData> result = dbManager.GetAllBarData(localBars);            
+            return Ok(result);
         }
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]

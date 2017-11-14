@@ -34,12 +34,12 @@ namespace WebApi.Database
             }
         }
 
-        public BarDataModel GetAllBarData(BarDataModel localBars)
+        public List<BarData> GetAllBarData(List<BarData> localBars)
         {
-            if (localBars == null)
-            {
-                return null;
-            }
+            //if (localBars == null)
+            //{
+            //    return null;
+            //}
             using (var db = new BarsDatabase())
             {
                 localBars.ForEach(bar => bar.Ratings = db.UserRatings.Where(x => x.BarId == bar.BarId).Select(x => x.Rating).ToList());

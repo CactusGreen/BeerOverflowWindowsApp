@@ -120,18 +120,25 @@ namespace BeerOverflowWindowsApp
                 }
                 result.RemoveDuplicates();
                 result.RemoveBarsOutsideRadius(radius);
-                await Task.Run(() => result = new DatabaseManager().GetAllBarData(result));
+                //await Task.Run(() => 
+                result = (BarDataModel)WebApiAccess.GetAllBarData(result);
+                //);
                 HideProgressBars();
                 
                 // Display
                 _barRating.BarsData = result;
                 var currentLocation = GetCurrentLocation();
-                foreach (var bar in _barRating.BarsData)
+                if (result != null)
                 {
-                    bar.DistanceToCurrentLocation =
-                        currentLocation.GetDistanceTo(new GeoCoordinate(bar.Latitude, bar.Longitude));
+                    foreach (var bar in _barRating.BarsData)
+                    {
+                        bar.DistanceToCurrentLocation =
+                            currentLocation.GetDistanceTo(new GeoCoordinate(bar.Latitude, bar.Longitude));
+                    }
+                    SortList(CompareType.Distance);
                 }
-                SortList(CompareType.Distance);
+                
+                
             }
             catch (ArgumentsForProvidersException)
             {
