@@ -1,14 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
-using FourSquare.SharpSquare.Core;
-using FourSquare.SharpSquare.Entities;
+using System.Linq;
+using System.Threading.Tasks;
 using BeerOverflowWindowsApp.DataModels;
+using BeerOverflowWindowsApp.Utilities;
+using Newtonsoft.Json;
+using static BeerOverflowWindowsApp.DataModels.FourSquareDataModel;
 
 namespace BeerOverflowWindowsApp.BarProviders
 {
-    class GetBarListFourSquare : IBeerable
+    class GetBarListFourSquare : JsonFetcher, IBeerable
     {
+        public string ProviderName { get; } = "FourSquare";
+        private readonly string _apiLink = ConfigurationManager.AppSettings["FourSquareAPILink"];
         private readonly string _clientId = ConfigurationManager.AppSettings["FourSquareClientId"];
         private readonly string _clientSecret = ConfigurationManager.AppSettings["FourSquareClientSecret"];
         private readonly string _categoryIdDs = ConfigurationManager.AppSettings["FourSquareCategoryIDs"];
@@ -16,57 +21,61 @@ namespace BeerOverflowWindowsApp.BarProviders
         public List<BarData> GetBarsAround(string latitude, string longitude, string radius)
         {
             RegexTools.LocationDataTextIsCorrect(latitude, longitude, radius);
-
-            // FourSquare doesn't like when the coordinates are (0,0), so we change it to something close.
-            // Should this be done with exceptions?
-            if (double.Parse(latitude, CultureInfo.InvariantCulture) == 0 && double.Parse(longitude, CultureInfo.InvariantCulture) == 0)
-            {
-                latitude = "0.000001";
-                longitude = "0.000001";
-            }
-
-            List<BarData> barList = null;
-            var result = GetBarData(latitude, longitude, radius);
-            barList = VenueListToBars(result);
+            var venueList = GetBarData(latitude, longitude, radius);
+            var barList = VenueListToBarList(venueList, radius);
             return barList;
         }
 
         private IEnumerable<Venue> GetBarData (string latitude, string longitude, string radius)
         {
-            var sharpSquare = new SharpSquare(_clientId, _clientSecret);
             var categoryIDs = _categoryIdDs.Split(',');
             var venueList = new List<Venue>();
-
-            foreach (var id in categoryIDs)
+            foreach (var category in categoryIDs)
             {
-                // let's build the query
-                var parameters = new Dictionary<string, string>
-                {
-                    { "ll", latitude + "," + longitude }, // Coords
-                    { "radius", radius },
-                    { "categoryId", id },
-                    { "intent", "browse" }
-                };
-                venueList.AddRange(sharpSquare.SearchVenues(parameters));
+                var link = string.Format(_apiLink, _clientId, _clientSecret, latitude, longitude, category, radius);
+                var jsonStream = GetJsonStream(link);
+                venueList.AddRange(JsonConvert.DeserializeObject<SearchResponse>(jsonStream).response.venues);
             }
             return venueList;
         }
 
-        private List<BarData> VenueListToBars (IEnumerable<Venue> resultData)
+        public async Task<List<BarData>> GetBarsAroundAsync(string latitude, string longitude, string radius)
         {
-            var barList = new List<BarData>();
-            foreach (var result in resultData)
-            {
-                var newBar = new BarData
-                {
-                    Title = result.name,
-                    Latitude = result.location.lat,
-                    Longitude = result.location.lng,
-                    Ratings = new List<int>()
-                };
-                barList.Add(newBar);
-            }
+            RegexTools.LocationDataTextIsCorrect(latitude, longitude, radius);
+            var venueList = await GetBarDataAsync(latitude, longitude, radius);
+            var barList = VenueListToBarList(venueList, radius);
             return barList;
+        }
+
+        private async Task<IEnumerable<Venue>> GetBarDataAsync(string latitude, string longitude, string radius)
+        {
+            var categoryIDs = _categoryIdDs.Split(',');
+            var venueList = new List<Venue>();
+            foreach (var category in categoryIDs)
+            {
+                var link = string.Format(_apiLink, _clientId, _clientSecret, latitude, longitude, category, radius);
+                var jsonStream = await GetJsonStreamAsync(link);
+                venueList.AddRange(JsonConvert.DeserializeObject<SearchResponse>(jsonStream).response.venues);
+            }
+            return venueList;
+        }
+
+        private static List<BarData> VenueListToBarList(IEnumerable<Venue> venueList, string radius)
+        {
+            var radiusNum = int.Parse(radius, CultureInfo.InvariantCulture);
+            return (from venue in venueList where (venue.location.distance <= radiusNum) select VenueToBar(venue)).ToList();
+        }
+
+        private static BarData VenueToBar(Venue venue)
+        {
+            return new BarData
+            {
+                Title = venue.name,
+                BarId = venue.name,   // Temporary solution until we decide on BarId 
+                Latitude = venue.location.lat,
+                Longitude = venue.location.lng,
+                Ratings = new List<int>()
+            };
         }
     }
 }

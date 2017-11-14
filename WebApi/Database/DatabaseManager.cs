@@ -30,7 +30,7 @@ namespace WebApi.Database
                 {
                     db.UserRatings.Add(new UsersRatingToBar(barToRate, userInDb, rating));
                 }
-                db.SaveChanges();              
+                db.SaveChanges();
             }
         }
 

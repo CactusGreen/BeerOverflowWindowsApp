@@ -1,19 +1,14 @@
 ﻿using System;
 using BeerOverflowWindowsApp.BarProviders;
 using BeerOverflowWindowsApp.Exceptions;
+using BeerOverflowWindowsApp.UnitTests.TestData;
 using NUnit.Framework;
 
 namespace BeerOverflowWindowsApp.UnitTests
 {
-    public class GetBarListGoogleUnitTests
+    public class GetBarListGoogleUnitTests : BarProviderTestData
     {
-        /*[Test]
-        [TestCase("0.0", "0.0", "0")]
-        [TestCase("-90.0", "-180.0", "50")]
-        [TestCase("90.0", "180.0", "50")]
-        [TestCase("-90.0", "180.0", "50")]
-        [TestCase("90.0", "-180.0", "50")]
-        [TestCase("54.67933", "25.283960", "999")]
+        /*[TestCaseSource("ValidDataCases")]
         public void GetBarsGoogle_GetBarsAround_ValidData(string latitude, string longitude, string radius)
         {
             // Arrange
@@ -34,10 +29,7 @@ namespace BeerOverflowWindowsApp.UnitTests
             }
         }*/
 
-        [Test]
-        [TestCase(null, "0.0", "0")]
-        [TestCase("0.0", null, "0")]
-        [TestCase("0.0", "0.0", null)]
+        [TestCaseSource("NullDataCases")]
         public void GetBarsGoogle_GetBarsAround_NullData(string latitude, string longitude, string radius)
         {
             // Arrange
@@ -46,10 +38,8 @@ namespace BeerOverflowWindowsApp.UnitTests
             var ex = Assert.Throws<ArgumentNullException>(() => getBars.GetBarsAround(latitude, longitude, radius));
         }
 
-        [Test]
-        public void GetBarsGoogle_GetBarsAround_InvalidLatidute([Values("T", "", "-91.0", "91.0")] string latitude, 
-                                                                [Values("1.0")] string longitude, 
-                                                                [Values("1")] string radius)
+        [TestCaseSource("InvalidLatitudeCases")]
+        public void GetBarsGoogle_GetBarsAround_InvalidLatidute(string latitude, string longitude, string radius)
         {
             // Arrange
             var getBars = new GetBarListGoogle();
@@ -59,10 +49,8 @@ namespace BeerOverflowWindowsApp.UnitTests
             Assert.That(ex.InvalidArguments == "latitude");
         }
 
-        [Test]
-        public void GetBarsGoogle_GetBarsAround_InvalidLongitude([Values("1.0")] string latitude, 
-                                                                 [Values("T", "", "-181.0", "181.0")]string longitude, 
-                                                                 [Values("1")] string radius)
+        [TestCaseSource("InvalidLongitudeCases")]
+        public void GetBarsGoogle_GetBarsAround_InvalidLongitude(string latitude, string longitude, string radius)
         {
             // Arrange
             var getBars = new GetBarListGoogle();
@@ -72,15 +60,59 @@ namespace BeerOverflowWindowsApp.UnitTests
             Assert.That(ex.InvalidArguments == "longitude");
         }
 
-        [Test]
-        public void GetBarsGoogle_GetBarsAround_InvalidRadius([Values("1.0")] string latitude, 
-                                                              [Values("1.0")] string longitude, 
-                                                              [Values("T", "-", "-1", "", "999999")] string radius)
+        [TestCaseSource("InvalidRadiusCases")]
+        public void GetBarsGoogle_GetBarsAround_InvalidRadius(string latitude, string longitude, string radius)
         {
             // Arrange
             var getBars = new GetBarListGoogle();
             // Act
             var ex = Assert.Throws<ArgumentsForProvidersException>(() => getBars.GetBarsAround(latitude, longitude, radius));
+            // now we can test the exception itself
+            Assert.That(ex.InvalidArguments == "radius");
+        }
+
+        [TestCaseSource("NullDataCases")]
+        public void GetBarsGoogle_GetBarsAroundAsync_NullData(string latitude, string longitude, string radius)
+        {
+            // Arrange
+            var getBars = new GetBarListGoogle();
+            // Act && Assert
+            var ex = Assert.ThrowsAsync<ArgumentNullException>
+                            (async () => await getBars.GetBarsAroundAsync(latitude, longitude, radius));
+        }
+
+        [TestCaseSource("InvalidLatitudeCases")]
+        public void GetBarsGoogle_GetBarsAroundAsync_InvalidLatidute(string latitude, string longitude, string radius)
+        {
+            // Arrange
+            var getBars = new GetBarListGoogle();
+            // Act
+            var ex = Assert.ThrowsAsync<ArgumentsForProvidersException>
+                            (async () => await getBars.GetBarsAroundAsync(latitude, longitude, radius));
+            // now we can test the exception itself
+            Assert.That(ex.InvalidArguments == "latitude");
+        }
+
+        [TestCaseSource("InvalidLongitudeCases")]
+        public void GetBarsGoogle_GetBarsAroundAsync_InvalidLongitude(string latitude, string longitude, string radius)
+        {
+            // Arrange
+            var getBars = new GetBarListGoogle();
+            // Act
+            var ex = Assert.ThrowsAsync<ArgumentsForProvidersException>
+                            (async () => await getBars.GetBarsAroundAsync(latitude, longitude, radius));
+            // now we can test the exception itself
+            Assert.That(ex.InvalidArguments == "longitude");
+        }
+
+        [TestCaseSource("InvalidRadiusCases")]
+        public void GetBarsGoogle_GetBarsAroundAsync_InvalidRadius(string latitude, string longitude, string radius)
+        {
+            // Arrange
+            var getBars = new GetBarListGoogle();
+            // Act
+            var ex = Assert.ThrowsAsync<ArgumentsForProvidersException>
+                            (async () => await getBars.GetBarsAroundAsync(latitude, longitude, radius));
             // now we can test the exception itself
             Assert.That(ex.InvalidArguments == "radius");
         }

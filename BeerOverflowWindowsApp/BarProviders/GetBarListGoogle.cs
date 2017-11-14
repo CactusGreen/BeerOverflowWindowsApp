@@ -1,16 +1,17 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using static BeerOverflowWindowsApp.DataModels.GoogleDataModel;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Net;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 using BeerOverflowWindowsApp.DataModels;
+using BeerOverflowWindowsApp.Utilities;
 
 namespace BeerOverflowWindowsApp.BarProviders
 {
-    class GetBarListGoogle : IBeerable
+    class GetBarListGoogle : JsonFetcher, IBeerable
     {
+        public string ProviderName { get; } = "Google";
         private readonly string _apiKey = ConfigurationManager.AppSettings["GoogleAPIKey"];
         private readonly string _apiLink = ConfigurationManager.AppSettings["GoogleAPILink"];
         private readonly string _categoryList = ConfigurationManager.AppSettings["GoogleAPICategories"];
@@ -18,56 +19,62 @@ namespace BeerOverflowWindowsApp.BarProviders
         public List<BarData> GetBarsAround(string latitude, string longitude, string radius)
         {
             RegexTools.LocationDataTextIsCorrect(latitude, longitude, radius);
-            List<BarData> barList = null;
-            try
-            {
-                var result = GetBarData(latitude, longitude, radius);
-                barList = PlacesApiQueryResponseToBars(result);
-            }
-            catch (Exception exception)
-            {
-                throw exception;
-            }
+            var placeList = GetBarData(latitude, longitude, radius);
+            var barList = PlaceListToBarList(placeList);
             return barList;
         }
 
-        private PlacesApiQueryResponse GetBarData(string latitude, string longitude, string radius)
+        private IEnumerable<Place> GetBarData(string latitude, string longitude, string radius)
         {
             var categoryList = _categoryList.Split(',');
-            var result = new PlacesApiQueryResponse {Results = new List<Result>()};
-
+            var placeList = new List<Place>();
             foreach (var category in categoryList)
             {
-                try
-                {
-                    var webClient = new WebClient { Encoding = Encoding.UTF8 };
-                    var response = webClient.DownloadString(string.Format(_apiLink, latitude, longitude, radius, category, _apiKey));
-                    var deserialized = JsonConvert.DeserializeObject<PlacesApiQueryResponse>(response);
-                    result.Results.AddRange(deserialized.Results);
-                }
-                catch (Exception exception)
-                {
-                    throw exception;
-                }
+                var link = string.Format(_apiLink, latitude, longitude, radius, category, _apiKey);
+                var jsonStream = GetJsonStream(link);
+                var deserialized = JsonConvert.DeserializeObject<PlacesApiQueryResponse>(jsonStream).Results;
+                placeList.AddRange(deserialized);
             }
-            return result;
+            return placeList;
         }
 
-        private List<BarData> PlacesApiQueryResponseToBars (PlacesApiQueryResponse resultData)
+        public async Task<List<BarData>> GetBarsAroundAsync(string latitude, string longitude, string radius)
         {
-            var barList = new List<BarData>();
-            foreach (var result in resultData.Results)
-            {
-                var newBar = new BarData
-                {
-                    Title = result.Name,
-                    Latitude = result.Geometry.Location.Lat,
-                    Longitude = result.Geometry.Location.Lng,
-                    Ratings = new List<int>()
-                };
-                barList.Add(newBar);
-            }
+            RegexTools.LocationDataTextIsCorrect(latitude, longitude, radius);
+            var placeList = await GetBarDataAsync(latitude, longitude, radius);
+            var barList = PlaceListToBarList(placeList);
             return barList;
+        }
+
+        private async Task<IEnumerable<Place>> GetBarDataAsync(string latitude, string longitude, string radius)
+        {
+            var categoryList = _categoryList.Split(',');
+            var placeList = new List<Place>();
+            foreach (var category in categoryList)
+            {
+                var link = string.Format(_apiLink, latitude, longitude, radius, category, _apiKey);
+                var jsonStream = await GetJsonStreamAsync(link);
+                var deserialized = JsonConvert.DeserializeObject<PlacesApiQueryResponse>(jsonStream).Results;
+                placeList.AddRange(deserialized);
+            }
+            return placeList;
+        }
+
+        private static List<BarData> PlaceListToBarList(IEnumerable<Place> placeList)
+        {
+            return placeList.Select(PlaceToBar).ToList();
+        }
+
+        private static BarData PlaceToBar(Place place)
+        {
+            return new BarData
+            {
+                Title = place.Name,
+                BarId = place.Name,   // Temporary solution until we decide on BarId 
+                Latitude = place.Geometry.Location.Lat,
+                Longitude = place.Geometry.Location.Lng,
+                Ratings = new List<int>()
+            };
         }
     }
 }

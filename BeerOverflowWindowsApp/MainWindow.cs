@@ -8,8 +8,11 @@ using BeerOverflowWindowsApp.BarComparers;
 using BeerOverflowWindowsApp.DataModels;
 using System.Device.Location;
 using System.Configuration;
-using System.Net;
+using System.Threading.Tasks;
 using BeerOverflowWindowsApp.BarProviders;
+using BeerOverflowWindowsApp.Utilities;
+using System.Net;
+using System.Net.Http;
 using BeerOverflowWindowsApp.Exceptions;
 using Microsoft.WindowsAPICodePack.Taskbar;
 
@@ -23,6 +26,13 @@ namespace BeerOverflowWindowsApp
         private readonly BarRating _barRating = null;
         private BarData _selectedBar;
         private MapWindow _mapForm;
+        private readonly List<object> _providerList = new List<object>
+        {
+            new GetBarListGoogle(),
+            new GetBarListFourSquare(),
+            new GetBarListFacebook(),
+            new GetBarListTripAdvisor()
+        };
 
         public MainWindow()
         {
@@ -36,13 +46,12 @@ namespace BeerOverflowWindowsApp
             RadiusTextBox.Text = _defaultRadius;
         }
 
-        public void ReLoadDataGrid(bool completely = false)
+        public void ReloadDataGrid(bool completely = false)
         {
             if (completely)
             {
                 BarDataGridView_ClearHeaderSortGlyphs();
             }
-
             var barData = _barRating.BarsData;
             BarDataGridView.Rows.Clear();
             foreach (var bar in barData)
@@ -69,22 +78,17 @@ namespace BeerOverflowWindowsApp
             _selectedBar = null;
         }
 
-        private void GoButton_Click(object sender, EventArgs e)
+        private async void GoButton_Click(object sender, EventArgs e)
         {
             var latitude = GetLatitude();
             var longitude = GetLongitude();
             var radius = GetRadius();
+            var failedToConnectCounter = 0;
+            var providerCount = _providerList.Count;
 
             try
             {
-                var providerList = new List<object>
-                {
-                    new GetBarListGoogle(),
-                    new GetBarListFourSquare(),
-                    new GetBarListFacebook(),
-                    new GetBarListTripAdvisor()
-                };
-                var providerCount = providerList.Count;
+                var barsFromProvider = new List<BarData>();
                 var progressStep = 100 / providerCount;
                 var result = new BarDataModel();
 
@@ -92,15 +96,34 @@ namespace BeerOverflowWindowsApp
                 GoButton.Enabled = false;
                 InitiateProgressBars();
                 UpdateProgressBars(currentProgressValue);
-                foreach (IBeerable provider in providerList)
+                foreach (IBeerable provider in _providerList)
                 {
-                    CollectBarsFromProvider(provider, result, latitude, longitude, radius);
+                    try
+                    {
+                        barsFromProvider = await CollectBarsFromProvider(provider, latitude, longitude, radius);
+                    }
+                    catch (HttpRequestException)
+                    {
+                        if (++failedToConnectCounter == providerCount)
+                        {
+                            MessageBox.Show("Check your internet connection, it seems to be down.");
+                        }
+                    }
+                    catch (WebException)
+                    {
+                        MessageBox.Show("Failed connecting to: " + provider.ProviderName);
+                    }
+
+                    result.AddRange(barsFromProvider);
                     currentProgressValue += progressStep;
                     UpdateProgressBars(currentProgressValue);
                 }
-                result.ForEach(bar => bar.BarId = bar.Title); // Temporary solution until we decide on BarId 
+                result.RemoveDuplicates();
+                result.RemoveBarsOutsideRadius(radius);
+                await Task.Run(() => result.GetRatings());
+                HideProgressBars();
+                
                 // Display
-                result.GetRatings();
                 _barRating.BarsData = result;
                 var currentLocation = GetCurrentLocation();
                 foreach (var bar in _barRating.BarsData)
@@ -108,20 +131,15 @@ namespace BeerOverflowWindowsApp
                     bar.DistanceToCurrentLocation =
                         currentLocation.GetDistanceTo(new GeoCoordinate(bar.Latitude, bar.Longitude));
                 }
-                SortList(CompareType.Distance, SortOrder.Ascending);
+                SortList(CompareType.Distance);
             }
             catch (ArgumentsForProvidersException)
             {
                 MessageBox.Show("Please enter the required data correctly. Erroneus data is painted red.");
             }
-            catch (WebException)
-            {
-                MessageBox.Show("There seems to be a problem with the network.");
-            }
             finally
             {
                 HideProgressBars();
-                Application.DoEvents(); // no idea what this does. Some threading stuff, but makes button disabling work
                 GoButton.Enabled = true;
             }
         }
@@ -143,33 +161,26 @@ namespace BeerOverflowWindowsApp
             TaskbarManager.Instance.SetProgressValue(currentValue, 100);
             // this is a big workaround for progressbar not updating as fast as we need it. 
             // TODO: Fix this when we do threads
+            // UPDATE, NO IDEA HOW TO FIX YET
             progressBar.Maximum = 101;
             progressBar.Value = currentValue + 1;
             progressBar.Value = currentValue;
             progressBar.Maximum = 100;
         }
 
-        private void CollectBarsFromProvider(IBeerable provider, BarDataModel barList,
+        private async Task<List<BarData>> CollectBarsFromProvider(IBeerable provider,
             string latitude, string longitude, string radius)
         {
+            List<BarData> response;
             try
             {
-                barList.AddRange(provider.GetBarsAround(latitude, longitude, radius));
-                barList.RemoveDuplicates();
-                barList.RemoveBarsOutsideRadius(radius);
+                response = await provider.GetBarsAroundAsync(latitude, longitude, radius);
             }
-            catch (ArgumentsForProvidersException)
+            catch (NotImplementedException)
             {
-                throw;
+                response = provider.GetBarsAround(latitude, longitude, radius);
             }
-            catch (WebException)
-            {
-                throw;
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show("Something went wrong with the message: " + exception.Message);
-            }
+            return response;
         }
 
         private string GetLatitude()
@@ -261,11 +272,11 @@ namespace BeerOverflowWindowsApp
                 _barRating.Sort(compareType, isAscending);
                 BarDataGridView_ClearHeaderSortGlyphs();
                 BarDataGridView.Columns[columnIndex].HeaderCell.SortGlyphDirection = sortOrder;
-                ReLoadDataGrid();
+                ReloadDataGrid();
             }
         }
 
-        private void ReSort()
+        private void Resort()
         {
             var currentSortOrder = SortOrder.None;
             var currentSortColumn = CompareType.None;
