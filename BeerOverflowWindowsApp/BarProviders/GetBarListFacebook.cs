@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
-using WebApi.DataModels;
+using BeerOverflowWindowsApp.DataModels;
 using Newtonsoft.Json;
-using static WebApi.DataModels.FacebookDataModel;
+using static BeerOverflowWindowsApp.DataModels.FacebookDataModel;
 
-namespace WebApi.BarProviders
+namespace BeerOverflowWindowsApp.BarProviders
 {
     class GetBarListFacebook : IBeerable
     {

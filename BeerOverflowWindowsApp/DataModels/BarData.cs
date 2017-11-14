@@ -1,10 +1,9 @@
-﻿using WebApi.Database;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace WebApi.DataModels
+namespace BeerOverflowWindowsApp.DataModels
 {
     [Table("Bar")]
     public class BarData : IEquatable<BarData>

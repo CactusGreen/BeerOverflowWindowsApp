@@ -1,9 +1,9 @@
 ﻿using System;
-using WebApi.BarComparers;
-using WebApi.DataModels;
+using BeerOverflowWindowsApp.BarComparers;
+using BeerOverflowWindowsApp.DataModels;
 using NUnit.Framework;
 
-namespace WebApi.UnitTests
+namespace BeerOverflowWindowsApp.UnitTests
 {
     [TestFixture]
     public class ComparerByDistanceUnitTests

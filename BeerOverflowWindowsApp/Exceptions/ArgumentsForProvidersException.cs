@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebApi.Exceptions
+namespace BeerOverflowWindowsApp.Exceptions
 {
     [Serializable]
     public class ArgumentsForProvidersException : Exception

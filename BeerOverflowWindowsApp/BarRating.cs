@@ -1,8 +1,8 @@
 ﻿using System;
-using WebApi.BarComparers;
-using WebApi.DataModels;
+using BeerOverflowWindowsApp.BarComparers;
+using BeerOverflowWindowsApp.DataModels;
 
-namespace WebApi
+namespace BeerOverflowWindowsApp
 {
     public class BarRating
     {

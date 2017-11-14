@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using WebApi.Exceptions;
+using BeerOverflowWindowsApp.Exceptions;
 
-namespace WebApi
+namespace BeerOverflowWindowsApp
 {
     static class RegexTools
     {

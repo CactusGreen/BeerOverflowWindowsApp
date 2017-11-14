@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WebApi.DataModels
+namespace BeerOverflowWindowsApp.DataModels
 {
     public class FacebookDataModel
     {

@@ -1,10 +1,10 @@
 ﻿using System.Configuration;
-using WebApi.DataModels;
+using BeerOverflowWindowsApp.DataModels;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace WebApi.FileIO
+namespace BeerOverflowWindowsApp.FileIO
 {
     static class BarFileWriter
     {

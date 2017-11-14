@@ -1,9 +1,9 @@
-﻿using WebApi.DataModels;
+﻿using BeerOverflowWindowsApp.DataModels;
 using FourSquare.SharpSquare.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace WebApi.Database
+namespace BeerOverflowWindowsApp.DataModels
 {
     [Table("UserRatings")]
     public class UsersRatingToBar

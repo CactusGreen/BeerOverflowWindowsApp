@@ -5,9 +5,9 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-using WebApi.Properties;
+using BeerOverflowWindowsApp.Properties;
 
-namespace WebApi.BarRaters
+namespace BeerOverflowWindowsApp.BarRaters
 {
     public sealed partial class ManualBarRating : Control
     {

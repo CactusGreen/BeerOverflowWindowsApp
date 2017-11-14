@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace WebApi.Database
+namespace BeerOverflowWindowsApp.DataModels
 {
     [Table("User")]
     public class User

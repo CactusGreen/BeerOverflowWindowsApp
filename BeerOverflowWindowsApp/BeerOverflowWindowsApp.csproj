@@ -141,8 +141,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="User.cs" />
-    <Compile Include="UsersRatingToBar.cs" />
+    <Compile Include="DataModels\User.cs" />
+    <Compile Include="DataModels\UsersRatingToBar.cs" />
     <Compile Include="WebApiAccess.cs" />
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>

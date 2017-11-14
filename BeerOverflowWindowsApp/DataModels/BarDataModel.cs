@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace WebApi.DataModels
+namespace BeerOverflowWindowsApp.DataModels
 {
    public class BarDataModel : List<BarData>
     {

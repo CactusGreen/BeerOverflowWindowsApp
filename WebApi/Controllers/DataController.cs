@@ -1,5 +1,4 @@
-﻿using WebApi.Database;
-using WebApi.DataModels;
+﻿using BeerOverflowWindowsApp.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.Description;
+using WebApi.Database;
 
 namespace WebApi.Controllers
 {

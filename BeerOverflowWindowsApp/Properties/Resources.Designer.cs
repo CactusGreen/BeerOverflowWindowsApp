@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApi.Properties {
+namespace BeerOverflowWindowsApp.Properties {
     using System;
     
     

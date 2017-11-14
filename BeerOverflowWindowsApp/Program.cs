@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace WebApi
+namespace BeerOverflowWindowsApp
 {
     static class Program
     {

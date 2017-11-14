@@ -4,16 +4,16 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using WebApi.BarComparers;
-using WebApi.DataModels;
+using BeerOverflowWindowsApp.BarComparers;
+using BeerOverflowWindowsApp.DataModels;
 using System.Device.Location;
 using System.Configuration;
 using System.Net;
-using WebApi.BarProviders;
-using WebApi.Exceptions;
+using BeerOverflowWindowsApp.BarProviders;
+using BeerOverflowWindowsApp.Exceptions;
 using Microsoft.WindowsAPICodePack.Taskbar;
 
-namespace WebApi
+namespace BeerOverflowWindowsApp
 {
     public partial class MainWindow : Form
     {

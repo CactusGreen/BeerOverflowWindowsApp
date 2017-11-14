@@ -1,5 +1,5 @@
 ﻿using System.Data.Entity;
-using WebApi.DataModels;
+using BeerOverflowWindowsApp.DataModels;
 
 namespace WebApi.Database
 {

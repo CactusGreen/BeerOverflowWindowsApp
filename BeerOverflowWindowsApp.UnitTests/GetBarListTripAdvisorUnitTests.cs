@@ -1,9 +1,9 @@
 ﻿using System;
-using WebApi.BarProviders;
-using WebApi.Exceptions;
+using BeerOverflowWindowsApp.BarProviders;
+using BeerOverflowWindowsApp.Exceptions;
 using NUnit.Framework;
 
-namespace WebApi.UnitTests
+namespace BeerOverflowWindowsApp.UnitTests
 {
     [TestFixture]
     public class GetBarListTripAdvisorUnitTests
