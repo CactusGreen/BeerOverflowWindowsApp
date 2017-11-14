@@ -22,8 +22,8 @@ namespace BeerOverflowWindowsApp
                 var json = JsonConvert.SerializeObject(bar);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = client.PostAsync("Api/Data/GetBarRatings", content);
-                var ab = response.Result.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<List<int>>(ab.Result);
+                var responseResult = response.Result.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<int>>(responseResult.Result);
                 return result;
             }
         }
@@ -37,8 +37,8 @@ namespace BeerOverflowWindowsApp
                 var json = JsonConvert.SerializeObject(localBars);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = client.PostAsync("Api/Data/GetAllBarData", content);
-                var ab = response.Result.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<BarDataModel>(ab.Result);
+                var responseResult = response.Result.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<BarDataModel>(responseResult.Result);
                 return result;
             }
         }
