@@ -32,7 +32,16 @@ namespace BeerOverflowWindowsApp
         }
         public static void SaveBarRating(BarData barToRate, int rating)
         {
-
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:1726/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var json = JsonConvert.SerializeObject(barToRate);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = client.PostAsync("Api/Data/GetBarRatings", content);
+                var aa = response.Result;
+            }
         }
     }
 }

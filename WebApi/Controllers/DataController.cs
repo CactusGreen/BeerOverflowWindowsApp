@@ -14,17 +14,18 @@ namespace WebApi.Controllers
     {
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
-        public BarDataModel GetAllBarData([FromBody]BarData localBars)
+        public BarDataModel GetAllBarData([FromBody]BarDataModel localBars)
         {
             var dbManager = new DatabaseManager();
-            BarDataModel result = null;// dbManager.GetAllBarData(localBars);            
+            BarDataModel result = dbManager.GetAllBarData(localBars);            
             return result;
         }
 
         [HttpPost]
         public IHttpActionResult SaveBarRating([FromBody] BarData barToRate, int rating)
         {
-            
+            var dbManager = new DatabaseManager();
+            dbManager.SaveBarRating(barToRate, rating);
             return Ok("Success");
         }
         [EnableCors(origins: "*", headers: "*", methods: "*")]
