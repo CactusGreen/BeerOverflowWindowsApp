@@ -120,7 +120,7 @@ namespace BeerOverflowWindowsApp
                 }
                 result.RemoveDuplicates();
                 result.RemoveBarsOutsideRadius(radius);
-                await Task.Run(() => result.GetRatings());
+                await Task.Run(() => result = new DatabaseManager().GetAllBarData(result));
                 HideProgressBars();
                 
                 // Display
