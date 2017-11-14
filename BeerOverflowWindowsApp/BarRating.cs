@@ -1,7 +1,6 @@
 ﻿using System;
 using BeerOverflowWindowsApp.BarComparers;
 using BeerOverflowWindowsApp.DataModels;
-using BeerOverflowWindowsApp.Database;
 
 namespace BeerOverflowWindowsApp
 {
@@ -20,7 +19,7 @@ namespace BeerOverflowWindowsApp
             {
                 throw new ArgumentNullException(nameof(barData), "BarRating.AddRating null parameter");
             }
-            new DatabaseManager().SaveBarRating(barData, rating);
+            WebApiAccess.SaveBarRating(barData, rating);
         }
 
         public void Sort(CompareType compareType, bool ascending = true)

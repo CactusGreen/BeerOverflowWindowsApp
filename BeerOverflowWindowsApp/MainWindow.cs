@@ -12,7 +12,6 @@ using System.Net;
 using BeerOverflowWindowsApp.BarProviders;
 using BeerOverflowWindowsApp.Exceptions;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using BeerOverflowWindowsApp.Database;
 
 namespace BeerOverflowWindowsApp
 {
@@ -196,8 +195,8 @@ namespace BeerOverflowWindowsApp
             int ratingNumber;
             if (_selectedBar != null && rating != "" && int.TryParse(rating, out ratingNumber))
             {
-                _barRating.AddRating(_selectedBar ,ratingNumber);
-                _selectedBar.Ratings = new DatabaseManager().GetBarRatings(_selectedBar);
+                _barRating.AddRating(_selectedBar, ratingNumber);
+                _selectedBar.Ratings = WebApiAccess.GetBarRatings(_selectedBar);
                 ReSort();
             }
         }

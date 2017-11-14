@@ -9,10 +9,10 @@ namespace BeerOverflowWindowsApp.Database
         public void SaveBarRating(BarData barToRate, int rating)
         {
             using (var db = new BarsDatabase())
-            {              
-                var userInDb = db.Users.FirstOrDefault(user => user.Username == Program.defaultUser.Username);
+            {
+                var userInDb = db.Users.FirstOrDefault(user => user.Username == "testUser");//Program.defaultUser.Username);
                 if (userInDb == null)
-                    userInDb = new User { Username = Program.defaultUser.Username };
+                    userInDb = new User { Username = "testUser" };//Program.defaultUser.Username };
                 var barInDb = db.Bars.FirstOrDefault(bar => bar.BarId == barToRate.BarId);
                 if (barInDb != null)
                 {
@@ -36,6 +36,10 @@ namespace BeerOverflowWindowsApp.Database
 
         public BarDataModel GetAllBarData(BarDataModel localBars)
         {
+            if (localBars == null)
+            {
+                return null;
+            }
             using (var db = new BarsDatabase())
             {
                 localBars.ForEach(bar => bar.Ratings = db.UserRatings.Where(x => x.BarId == bar.BarId).Select(x => x.Rating).ToList());

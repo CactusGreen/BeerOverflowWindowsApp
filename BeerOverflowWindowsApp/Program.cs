@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Windows.Forms;
-using BeerOverflowWindowsApp.Database;
 
 namespace BeerOverflowWindowsApp
 {
     static class Program
     {
-        public static User defaultUser = new User { Username = "admin" };
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
