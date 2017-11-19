@@ -7,8 +7,10 @@ namespace BeerOverflowWindowsApp.DataModels
     [Table("User")]
     public class User
     {
-        [Key]
+        [Key, MaxLength(30)]
         public string Username { get; set; }
+
+        [MaxLength(30)]
         public string Password { get; set; }
 
         public virtual ICollection<UsersRatingToBar> UserRatings { get; set; }

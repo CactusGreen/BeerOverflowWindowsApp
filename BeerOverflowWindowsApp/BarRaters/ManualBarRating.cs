@@ -12,6 +12,25 @@ namespace BeerOverflowWindowsApp.BarRaters
     public sealed partial class ManualBarRating : Control
     {
         private List<Rectangle> beerGlassList;
+        private ToolTip toolTip;
+
+        public ManualBarRating()
+        {
+            this.DoubleBuffered = true;
+            InitializeComponent();
+            this.imageSize = 100;
+            this.MinimumSize = new Size(imageSize * 5, imageSize);
+            this.MaximumSize = new Size(imageSize * 5, imageSize);
+            this.beerGlassList = new List<Rectangle>(5);
+            for (var i = 0; i < 5; i++)
+            {
+                beerGlassList.Add(new Rectangle(i * imageSize, 0, imageSize, imageSize));
+            }
+            SetImages();
+            toolTip = new ToolTip { ShowAlways = true };
+            Refresh();
+        }
+
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         private int imageSize;
         public int ImageSize
@@ -31,28 +50,14 @@ namespace BeerOverflowWindowsApp.BarRaters
             }
         }
 
-        public string Rating
+        public int Rating
         {
-            get { return numberOfGlasses + 1 + ""; }
-            private set { }
-        }
-
-        private ToolTip toolTip;
-        public ManualBarRating()
-        {
-            this.DoubleBuffered = true;
-            InitializeComponent();
-            this.imageSize = 100;
-            this.MinimumSize = new Size(imageSize * 5, imageSize);
-            this.MaximumSize = new Size(imageSize * 5, imageSize);
-            this.beerGlassList = new List<Rectangle>(5);
-            for(var i = 0; i < 5; i++)
+            get { return lastLocation + 1; }
+            set
             {
-                beerGlassList.Add(new Rectangle(i * imageSize, 0, imageSize, imageSize));
+                numberOfGlasses = value;
+                this.Refresh();
             }
-            SetImages();
-            toolTip = new ToolTip {ShowAlways = true};
-            Refresh();
         }
 
         private Image selectedImage;
@@ -70,8 +75,14 @@ namespace BeerOverflowWindowsApp.BarRaters
             }
         }
 
+        private void ManualBarRating_MouseClick(object sender, MouseEventArgs e)
+        {
+            SelectRating(e.Location);
+        }
+
         private bool mouseEntered = false;
-        private int numberOfGlasses = 0;
+        private int numberOfGlasses = -1;
+
         private void ManualBarRating_MouseEnter(object sender, EventArgs e)
         {
             mouseEntered = true;
@@ -84,20 +95,22 @@ namespace BeerOverflowWindowsApp.BarRaters
         private const string toolTipMessage5 = "Beeroverflow!";
         private string[] toolTipMessages = new string[] {toolTipMessage1, toolTipMessage2, toolTipMessage3, toolTipMessage4, toolTipMessage5 };
         private int lastLocation = -1;
+
         private void ManualBarRating_MouseMove(object sender, MouseEventArgs e)
         {
             if (ClientRectangle.Contains(e.Location))
             {
                 if (mouseEntered && (e.X / imageSize) != lastLocation)
                 {
-                    SelectRating(e.Location);
+                    //SelectRating(e.Location);
                     lastLocation = e.X / imageSize;
                     toolTip.Show(toolTipMessages[lastLocation], this, e.X + 10, e.Y + 10, 3000);
                 }
             }
             else
             {
-                SelectRating(new Point(1, 1));
+                //SelectRating(new Point(-1, -1));
+                numberOfGlasses = -1;
                 toolTip.Hide(this);
                 lastLocation = -1;
             }
@@ -108,7 +121,7 @@ namespace BeerOverflowWindowsApp.BarRaters
             lastLocation = -1;
             toolTip.Hide(this);
             mouseEntered = false;
-            numberOfGlasses = 0;
+            numberOfGlasses = -1;
             Refresh();
         }
 

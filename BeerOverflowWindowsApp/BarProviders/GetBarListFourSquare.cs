@@ -80,7 +80,6 @@ namespace BeerOverflowWindowsApp.BarProviders
                 BarId = venue.name,   // Temporary solution until we decide on BarId 
                 Latitude = venue.location.lat,
                 Longitude = venue.location.lng,
-                Ratings = new List<int>()
             };
         }
     }

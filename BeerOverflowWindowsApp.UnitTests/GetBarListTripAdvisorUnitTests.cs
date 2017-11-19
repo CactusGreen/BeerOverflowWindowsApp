@@ -30,7 +30,7 @@ namespace BeerOverflowWindowsApp.UnitTests
             foreach (var bar in barList)
             {
                 Assert.NotNull(bar);
-                Assert.NotNull(bar.Ratings);
+
                 Assert.NotNull(bar.Title);
             }
         }
@@ -53,7 +53,7 @@ namespace BeerOverflowWindowsApp.UnitTests
             foreach (var bar in barList)
             {
                 Assert.NotNull(bar);
-                Assert.NotNull(bar.Ratings);
+
                 Assert.NotNull(bar.Title);
             }
         }

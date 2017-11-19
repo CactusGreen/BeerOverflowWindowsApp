@@ -13,19 +13,19 @@ namespace BeerOverflowWindowsApp.DataModels
             this.Rating = rating;
         }
         public UsersRatingToBar() { }
-        [ForeignKey("Bar")]
-        [Key]
-        [Column(Order = 0)]
+
+        [ForeignKey("Bar"), Key, Column(Order = 0), MaxLength(50)]
         public string BarId { get; set; }
         public virtual BarData Bar { get; set; }
 
-        [ForeignKey("User")]
-        [Key]
-        [Column(Order = 1)]
+        [ForeignKey("User"), Key, Column(Order = 1), MaxLength(50)]
         public string Username { get; set; }
         public virtual User User { get; set; }
 
+        [Required]
         public int Rating { get; set; }
+
+        [MaxLength(400)]
         public string Comment { get; set; }
     }
 }

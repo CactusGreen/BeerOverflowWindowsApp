@@ -95,6 +95,8 @@
     <Compile Include="BarRating.cs" />
     <Compile Include="DataModels\RatingModel.cs" />
     <Compile Include="DataModels\FourSquareDataModel.cs" />
+    <Compile Include="DataModels\UserAndBarModel.cs" />
+    <Compile Include="DataModels\UserAndBarsModel.cs" />
     <Compile Include="Utilities\IHttpFetcher.cs" />
     <Compile Include="Utilities\JsonFetcher.cs" />
     <Compile Include="Utilities\RegexTools.cs" />

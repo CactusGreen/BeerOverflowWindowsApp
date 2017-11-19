@@ -11,35 +11,11 @@ namespace BeerOverflowWindowsApp.BarComparers
         {
             if (barData1 == null) throw new ArgumentNullException(nameof(barData1));
             if (barData2 == null) throw new ArgumentNullException(nameof(barData2));
-
-            int result;
-            if (barData1.Ratings == null && barData2.Ratings == null)
-            {
-                result = 0;
-            }
-            // 0 < x
-            else if (barData1.Ratings == null && barData2.Ratings != null)
-            {
-                result = -1;
-            }
-            // x > 0
-            else if (barData1.Ratings != null && barData2.Ratings == null)
-            {
-                result = 1;
-            }
-            else
-            {
-                var bar1RatingAverage = barData1.Ratings.DefaultIfEmpty().Average();
-                var bar2RatingAverage = barData2.Ratings.DefaultIfEmpty().Average();
-
-                result = bar1RatingAverage == bar2RatingAverage
+            int result = barData1.AvgRating == barData2.AvgRating
                     ? 0 
-                    : bar1RatingAverage > bar2RatingAverage
+                    : barData1.AvgRating > barData2.AvgRating
                         ? 1 
                         : -1 ;
-            }
-            // compares by titles, if ratings are equal. 
-            // Is this necesary?
             if (result == 0)
             {
                 result = string.Compare(barData1.Title, barData2.Title);

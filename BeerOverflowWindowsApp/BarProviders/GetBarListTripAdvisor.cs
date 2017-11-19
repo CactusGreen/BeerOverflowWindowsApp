@@ -136,7 +136,6 @@ namespace BeerOverflowWindowsApp.BarProviders
                 BarId = place.name,   // Temporary solution until we decide on BarId 
                 Latitude = double.Parse(place.locationResponse.latitude, CultureInfo.InvariantCulture),
                 Longitude = double.Parse(place.locationResponse.longitude, CultureInfo.InvariantCulture),
-                Ratings = new List<int>()
             };
         }
 

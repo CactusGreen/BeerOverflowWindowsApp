@@ -2,7 +2,8 @@
 {
     public class RatingModel
     {
-        public BarData barData { get; set; }
-        public int rating { get; set; }
+        public BarData Bar { get; set; }
+        public int Rating { get; set; }
+        public User User { get; set; }
     }
 }

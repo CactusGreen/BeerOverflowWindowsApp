@@ -56,11 +56,8 @@ namespace BeerOverflowWindowsApp
             BarDataGridView.Rows.Clear();
             foreach (var bar in barData)
             {
-                string rating;
-                if (bar.Ratings != null && bar.Ratings.Any())
-                    rating = bar.Ratings?.Average().ToString("0.00");
-                else
-                    rating = "0";
+                string rating = bar.AvgRating.ToString("0.00");
+                
                 var distance = bar.DistanceToCurrentLocation.ToString("0");
                 BarDataGridView.Rows.Add(bar.Title, rating, distance);
             }
@@ -207,12 +204,12 @@ namespace BeerOverflowWindowsApp
 
         private void ManualBarRating_Click(object sender, EventArgs e)
         {
-            var rating = manualBarRating.Rating;
-            int ratingNumber;
-            if (_selectedBar != null && rating != "" && int.TryParse(rating, out ratingNumber))
+            int rating = manualBarRating.Rating;
+
+            if (_selectedBar != null)
             {
-                Task.Run(() => _barRating.AddRating(_selectedBar, ratingNumber)).Wait();
-                Task.Run(() => _selectedBar.Ratings = WebApiAccess.GetBarRatings(_selectedBar)).Wait();
+                Task.Run(() => _barRating.AddRating(_selectedBar, rating)).Wait();
+                Task.Run(() => _selectedBar = WebApiAccess.GetBarRatings(_selectedBar)).Wait();
                 Resort();
             }
         }

@@ -26,8 +26,9 @@ namespace BeerOverflowWindowsApp.FileIO
         {
             var barList = GetAllBarData();
             var barInDatabase = barList.Find(x => x.Title == bar.Title);
-            var barsRatings = barInDatabase?.Ratings;
-            return barsRatings;
+            //var barsRatings = barInDatabase?.Ratings;
+            //return barsRatings;
+            return null;
         }
     }
 }

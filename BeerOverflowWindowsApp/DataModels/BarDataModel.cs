@@ -123,14 +123,6 @@ namespace BeerOverflowWindowsApp.DataModels
                     .Where(c => char.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark));
         }
 
-        public void GetRatings()
-        {
-            foreach (var bar in this)
-            {
-                bar.Ratings = WebApiAccess.GetBarRatings(bar);
-            }
-        }
-
         public void RemoveBarsOutsideRadius(string radius)
         {
             RegexTools.RadiusTextIsCorrect(radius);
