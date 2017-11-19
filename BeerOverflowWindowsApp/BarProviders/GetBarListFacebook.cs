@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using BeerOverflowWindowsApp.DataModels;
 using BeerOverflowWindowsApp.Utilities;
-using Newtonsoft.Json;
 using static BeerOverflowWindowsApp.DataModels.FacebookDataModel;
 
 namespace BeerOverflowWindowsApp.BarProviders
@@ -36,8 +35,7 @@ namespace BeerOverflowWindowsApp.BarProviders
         private IEnumerable<Place> GetBarData(string latitude, string longitude, string radius)
         {
             var link = string.Format(_apiLink, _accessToken, latitude, longitude, radius, _requestedFields, _category);
-            var jsonStream = _fetcher.GetHttpStream(link);
-            var barList = JsonConvert.DeserializeObject<PlacesResponse>(jsonStream).data;
+            var barList = FetcherAndDeserializer.FetchAndDeserialize<PlacesResponse>(link, _fetcher).data;
             return barList;
         }
 
@@ -53,8 +51,8 @@ namespace BeerOverflowWindowsApp.BarProviders
         {
             RegexTools.LocationDataTextIsCorrect(latitude, longitude, radius);
             var link = string.Format(_apiLink, _accessToken, latitude, longitude, radius, _requestedFields, _category);
-            var jsonStream = await _fetcher.GetHttpStreamAsync(link);
-            var barList = JsonConvert.DeserializeObject<PlacesResponse>(jsonStream).data;
+            var deserialized = await FetcherAndDeserializer.FetchAndDeserializeAsync<PlacesResponse>(link, _fetcher);
+            var barList = deserialized.data;
             return barList;
         }
 

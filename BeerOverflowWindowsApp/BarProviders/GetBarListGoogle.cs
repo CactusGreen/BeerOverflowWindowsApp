@@ -1,11 +1,10 @@
-﻿using Newtonsoft.Json;
-using static BeerOverflowWindowsApp.DataModels.GoogleDataModel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using BeerOverflowWindowsApp.DataModels;
 using BeerOverflowWindowsApp.Utilities;
+using static BeerOverflowWindowsApp.DataModels.GoogleDataModel;
 
 namespace BeerOverflowWindowsApp.BarProviders
 {
@@ -38,8 +37,7 @@ namespace BeerOverflowWindowsApp.BarProviders
             foreach (var category in categoryList)
             {
                 var link = string.Format(_apiLink, latitude, longitude, radius, category, _apiKey);
-                var jsonStream = _fetcher.GetHttpStream(link);
-                var deserialized = JsonConvert.DeserializeObject<PlacesApiQueryResponse>(jsonStream).Results;
+                var deserialized = FetcherAndDeserializer.FetchAndDeserialize<PlacesApiQueryResponse>(link, _fetcher).Results;
                 placeList.AddRange(deserialized);
             }
             return placeList;
@@ -60,9 +58,8 @@ namespace BeerOverflowWindowsApp.BarProviders
             foreach (var category in categoryList)
             {
                 var link = string.Format(_apiLink, latitude, longitude, radius, category, _apiKey);
-                var jsonStream = await _fetcher.GetHttpStreamAsync(link);
-                var deserialized = JsonConvert.DeserializeObject<PlacesApiQueryResponse>(jsonStream).Results;
-                placeList.AddRange(deserialized);
+                var deserializedResponse = await FetcherAndDeserializer.FetchAndDeserializeAsync<PlacesApiQueryResponse>(link, _fetcher);
+                placeList.AddRange(deserializedResponse.Results);
             }
             return placeList;
         }

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using BeerOverflowWindowsApp.DataModels;
 using BeerOverflowWindowsApp.Utilities;
-using Newtonsoft.Json;
 using static BeerOverflowWindowsApp.DataModels.FourSquareDataModel;
 
 namespace BeerOverflowWindowsApp.BarProviders
@@ -39,8 +38,7 @@ namespace BeerOverflowWindowsApp.BarProviders
             foreach (var category in categoryIDs)
             {
                 var link = string.Format(_apiLink, _clientId, _clientSecret, latitude, longitude, category, radius);
-                var jsonStream = _fetcher.GetHttpStream(link);
-                venueList.AddRange(JsonConvert.DeserializeObject<SearchResponse>(jsonStream).response.venues);
+                venueList.AddRange(FetcherAndDeserializer.FetchAndDeserialize<SearchResponse>(link, _fetcher).response.venues);
             }
             return venueList;
         }
@@ -60,8 +58,8 @@ namespace BeerOverflowWindowsApp.BarProviders
             foreach (var category in categoryIDs)
             {
                 var link = string.Format(_apiLink, _clientId, _clientSecret, latitude, longitude, category, radius);
-                var jsonStream = await _fetcher.GetHttpStreamAsync(link);
-                venueList.AddRange(JsonConvert.DeserializeObject<SearchResponse>(jsonStream).response.venues);
+                var deserialized = await FetcherAndDeserializer.FetchAndDeserializeAsync<SearchResponse>(link, _fetcher);
+                venueList.AddRange(deserialized.response.venues);
             }
             return venueList;
         }
