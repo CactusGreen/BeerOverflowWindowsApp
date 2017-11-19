@@ -62,7 +62,7 @@ namespace BeerOverflowWindowsApp
                 else
                     rating = "0";
                 var distance = bar.DistanceToCurrentLocation.ToString("0");
-                BarDataGridView.Rows.Add(bar.Title, rating, distance);               
+                BarDataGridView.Rows.Add(bar.Title, rating, distance);
             }
             if (BarDataGridView.Rows.Count > 0 && _selectedBar != null)
             {
@@ -120,11 +120,9 @@ namespace BeerOverflowWindowsApp
                 }
                 result.RemoveDuplicates();
                 result.RemoveBarsOutsideRadius(radius);
-                //await Task.Run(() => 
-                result = (BarDataModel)WebApiAccess.GetAllBarData(result);
-                //);
+                await Task.Run(() => result = (BarDataModel)WebApiAccess.GetAllBarData(result));
                 HideProgressBars();
-                
+
                 // Display
                 _barRating.BarsData = result;
                 var currentLocation = GetCurrentLocation();
@@ -137,8 +135,8 @@ namespace BeerOverflowWindowsApp
                     }
                     SortList(CompareType.Distance);
                 }
-                
-                
+
+
             }
             catch (ArgumentsForProvidersException)
             {
@@ -213,8 +211,8 @@ namespace BeerOverflowWindowsApp
             int ratingNumber;
             if (_selectedBar != null && rating != "" && int.TryParse(rating, out ratingNumber))
             {
-                _barRating.AddRating(_selectedBar, ratingNumber);
-                _selectedBar.Ratings = WebApiAccess.GetBarRatings(_selectedBar);
+                Task.Run(() => _barRating.AddRating(_selectedBar, ratingNumber)).Wait();
+                Task.Run(() => _selectedBar.Ratings = WebApiAccess.GetBarRatings(_selectedBar)).Wait();
                 Resort();
             }
         }
@@ -223,7 +221,7 @@ namespace BeerOverflowWindowsApp
         {
             if (BarDataGridView.CurrentRow != null)
             {
-                var selectedBarName = (string) BarDataGridView.CurrentRow.Cells["titleColumn"].Value;
+                var selectedBarName = (string)BarDataGridView.CurrentRow.Cells["titleColumn"].Value;
                 _selectedBar = _barRating.BarsData.Find(bar => bar.Title == selectedBarName);
             }
         }
@@ -291,7 +289,7 @@ namespace BeerOverflowWindowsApp
             {
                 if (column.HeaderCell.SortGlyphDirection == SortOrder.None) continue;
                 currentSortOrder = column.HeaderCell.SortGlyphDirection;
-                currentSortColumn = (CompareType) column.Index + 1;
+                currentSortColumn = (CompareType)column.Index + 1;
                 break;
             }
             if (currentSortOrder != SortOrder.None && currentSortColumn != CompareType.None)
@@ -307,7 +305,7 @@ namespace BeerOverflowWindowsApp
             var toBeSortOrder = currentSortOrder != SortOrder.None
                 ? (currentSortOrder == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending)
                 : SortOrder.Ascending;
-            SortList((CompareType) e.ColumnIndex + 1, toBeSortOrder);
+            SortList((CompareType)e.ColumnIndex + 1, toBeSortOrder);
         }
 
         private void BarDataGridView_ClearHeaderSortGlyphs()
