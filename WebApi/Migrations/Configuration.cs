@@ -6,7 +6,7 @@ namespace WebApi.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
             ContextKey = "WebApi.Database.BarsDatabase";
         }
 
