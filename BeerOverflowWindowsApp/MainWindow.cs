@@ -24,7 +24,7 @@ namespace BeerOverflowWindowsApp
         private readonly string _defaultLongitude = ConfigurationManager.AppSettings["defaultLongitude"];
         private readonly string _defaultRadius = ConfigurationManager.AppSettings["defaultRadius"];
         private readonly BarRating _barRating = null;
-        private BarData _selectedBar;
+        private BarData _selectedBar = null;
         private MapWindow _mapForm;
         private readonly List<object> _providerList = new List<object>
         {
@@ -73,6 +73,7 @@ namespace BeerOverflowWindowsApp
         {
             BarDataGridView.ClearSelection();
             _selectedBar = null;
+            manualBarRating.Rating = 0;
         }
 
         private async void GoButton_Click(object sender, EventArgs e)
@@ -220,6 +221,7 @@ namespace BeerOverflowWindowsApp
             {
                 var selectedBarName = (string)BarDataGridView.CurrentRow.Cells["titleColumn"].Value;
                 _selectedBar = _barRating.BarsData.Find(bar => bar.Title == selectedBarName);
+                manualBarRating.Rating = _selectedBar.UserRating;
             }
         }
 

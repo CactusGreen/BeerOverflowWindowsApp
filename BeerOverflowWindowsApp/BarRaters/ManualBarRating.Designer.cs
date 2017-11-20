@@ -32,7 +32,7 @@
             this.MouseEnter += ManualBarRating_MouseEnter;
             this.MouseMove += ManualBarRating_MouseMove;
             this.MouseLeave += ManualBarRating_MouseLeave;
-            this.MouseClick += ManualBarRating_MouseClick;
+            //this.MouseClick += ManualBarRating_MouseClick;
             this.ResumeLayout(false);
         }
         #endregion

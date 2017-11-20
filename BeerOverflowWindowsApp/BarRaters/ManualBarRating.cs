@@ -55,7 +55,7 @@ namespace BeerOverflowWindowsApp.BarRaters
             get { return lastLocation + 1; }
             set
             {
-                numberOfGlasses = value;
+                numberOfGlasses = value - 1;
                 this.Refresh();
             }
         }
@@ -110,7 +110,7 @@ namespace BeerOverflowWindowsApp.BarRaters
             else
             {
                 //SelectRating(new Point(-1, -1));
-                numberOfGlasses = -1;
+                //numberOfGlasses = -1;
                 toolTip.Hide(this);
                 lastLocation = -1;
             }
@@ -121,7 +121,7 @@ namespace BeerOverflowWindowsApp.BarRaters
             lastLocation = -1;
             toolTip.Hide(this);
             mouseEntered = false;
-            numberOfGlasses = -1;
+            //numberOfGlasses = -1;
             Refresh();
         }
 

@@ -38,14 +38,12 @@ namespace WebApi.Database
         {
             using (var db = new BarsDatabase())
             {
-                localBars.ForEach(bar => bar.AvgRating = (float)db.UserRatings.Where(x => x.BarId == bar.BarId).Select(x => x.Rating).DefaultIfEmpty().Average());
-
-                
-                // {
-                //   bar.AvgRating = (float)db.UserRatings.Where(x => x.BarId == bar.BarId).Select(x => x.Rating).DefaultIfEmpty().Average();
-                // var barRating = db.UserRatings.FirstOrDefault(userRating => userRating.BarId == bar.BarId && userRating.Username == user.Username);
-                //bar.UserRating = barRating != null ? barRating.Rating : 0;
-                // });
+                localBars.ForEach(bar =>  
+                {
+                    bar.AvgRating = (float)db.UserRatings.Where(x => x.BarId == bar.BarId).Select(x => x.Rating).DefaultIfEmpty().Average();
+                    var barRating = db.UserRatings.FirstOrDefault(userRating => userRating.BarId == bar.BarId && userRating.Username == user.Username);
+                    bar.UserRating = barRating != null ? barRating.Rating : 0;
+                });
             }
             return localBars;
         }
